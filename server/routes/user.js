@@ -10,6 +10,7 @@ import {
   findUser,
   findUserByEmail,
   getNotifications,
+  deleteNotifications,
   getWorks,
   getTasks
 } from "../controllers/user.js";
@@ -20,12 +21,15 @@ const router = express.Router();
 //update user
 router.put("/:id", verifyToken, update);
 
+//delete notifications of a user
+router.delete("/notifications", verifyToken, deleteNotifications);
+
 //delete user
 router.delete("/:id", verifyToken, deleteUser);
 
 //get a user
-router.get("/find/:id",verifyToken, findUser);
-router.get("/find",verifyToken, getUser);
+router.get("/find/:id", verifyToken, findUser);
+router.get("/find", verifyToken, getUser);
 
 //get user projects
 router.get("/projects", verifyToken, getUserProjects);
@@ -34,7 +38,7 @@ router.get("/projects", verifyToken, getUserProjects);
 router.get("/teams", verifyToken, getUserTeams);
 
 //search a user
-router.get("/search/:email",verifyToken, findUserByEmail);
+router.get("/search/:email", verifyToken, findUserByEmail);
 
 //get notifications of a user
 router.get("/notifications", verifyToken, getNotifications);

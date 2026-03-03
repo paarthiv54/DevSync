@@ -169,6 +169,51 @@ export const updateProject = async (req, res, next) => {
   }
 };
 
+export const addProjectDocument = async (req, res, next) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return next(createError(404, "Project not found!"));
+
+    const userInProject = project.members.find(m => m.id.toString() === req.user.id);
+    if (!userInProject || !["Owner", "Admin", "Editor"].includes(userInProject.access)) {
+      return next(createError(403, "You are not allowed to add documents to this project!"));
+    }
+
+    const updatedProject = await Project.findByIdAndUpdate(
+      req.params.id,
+      { $push: { documents: req.body } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: "Document added successfully.", project: updatedProject });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteProjectDocument = async (req, res, next) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project) return next(createError(404, "Project not found!"));
+
+    const userInProject = project.members.find(m => m.id.toString() === req.user.id);
+    if (!userInProject || !["Owner", "Admin", "Editor"].includes(userInProject.access)) {
+      return next(createError(403, "You do not have permission to delete documents!"));
+    }
+
+    const updatedProject = await Project.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { documents: { _id: req.params.docId } } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: "Document deleted successfully.", project: updatedProject });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 
 export const updateMembers = async (req, res, next) => {
   try {

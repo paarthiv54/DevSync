@@ -17,9 +17,9 @@ import {
   Settings,
   HistoryToggleOff,
   ReportProblem,
+  GitHub,
   VideoCall,
   VideoCameraFront,
-  Article,
 } from "@mui/icons-material";
 import { CircularProgress, IconButton, Avatar, AvatarGroup, Tooltip, TextField, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,8 +39,8 @@ import IdeaCard from "../components/IdeaCard";
 import ChatContainer from "../components/ChatContainer";
 import ProjectTimeline from "../components/ProjectTimeline";
 import GitHubFeed from "../components/GitHubFeed";
-import ProjectDocuments from "../components/ProjectDocuments";
 import { tagColors } from "../data/data";
+import ProjectDocuments from "../components/ProjectDocuments";
 import { io } from "socket.io-client";
 
 // --- Animations ---
@@ -578,11 +578,11 @@ const ProjectDetails = () => {
           <ViewTab active={activeView === 'timeline'} onClick={() => setActiveView('timeline')}>
             <HistoryToggleOff sx={{ fontSize: 16 }} /> Timeline
           </ViewTab>
-          <ViewTab active={activeView === 'documents'} onClick={() => setActiveView('documents')}>
-            <Article sx={{ fontSize: 16 }} /> Documents
-          </ViewTab>
           <ViewTab active={activeView === 'github'} onClick={() => setActiveView('github')}>
             <GitHub sx={{ fontSize: 16 }} /> GitHub
+          </ViewTab>
+          <ViewTab active={activeView === 'documents'} onClick={() => setActiveView('documents')}>
+            <DonutLarge sx={{ fontSize: 16 }} /> Documents
           </ViewTab>
         </ViewTabs>
       </div>
@@ -602,7 +602,7 @@ const ProjectDetails = () => {
       ) : activeView === 'github' ? (
         <GitHubFeed projectId={id} githubRepo={item.githubRepo} />
       ) : activeView === 'documents' ? (
-        <ProjectDocuments project={item} setProject={setItems} token={token} />
+        <ProjectDocuments project={item} setProject={setItems} />
       ) : (
         <MainContent>
           <KanbanBoard>

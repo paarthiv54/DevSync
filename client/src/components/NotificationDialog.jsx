@@ -16,11 +16,29 @@ const Wrapper = styled.div`
   background-color: ${({ theme }) => theme.card};
 `;
 
+const HeadingGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 12px 12px 12px;
+`;
+
 const Heading = styled.div`
   font-size: 22px;
   font-weight: 500;
   color: ${({ theme }) => theme.text};
-  margin: 4px 0px 12px 12px;
+`;
+
+const ClearButton = styled.button`
+  background: transparent;
+  border: none;
+  color: ${({ theme }) => theme.primary};
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const Item = styled.div`
@@ -64,6 +82,7 @@ const NotificationDialog = ({
   handleClose,
   currentUser,
   notification,
+  handleClearNotifications,
 }) => {
   return (
     <Popover
@@ -78,7 +97,12 @@ const NotificationDialog = ({
       anchorPosition={{ top: 60, left: 1800 }}
     >
       <Wrapper>
-        <Heading>Notifications</Heading>
+        <HeadingGroup>
+          <Heading>Notifications</Heading>
+          {notification && notification.length > 0 && (
+            <ClearButton onClick={handleClearNotifications}>Clear All</ClearButton>
+          )}
+        </HeadingGroup>
 
         {notification.map((item, index) => (
           <Item key={item._id || index}>
@@ -95,6 +119,12 @@ const NotificationDialog = ({
             </Details>
           </Item>
         ))}
+
+        {(!notification || notification.length === 0) && (
+          <div style={{ textAlign: "center", marginTop: "20px", color: "inherit", opacity: 0.7 }}>
+            No new notifications
+          </div>
+        )}
 
       </Wrapper>
     </Popover>

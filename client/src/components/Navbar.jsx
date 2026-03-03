@@ -14,7 +14,7 @@ import Avatar from "@mui/material/Avatar";
 import AccountDialog from "./AccountDialog";
 import UserAvatar from "./UserAvatar";
 import NotificationDialog from "./NotificationDialog";
-import { getUsers, notifications } from "../api/index";
+import { getUsers, notifications, clearNotifications } from "../api/index";
 import { openSnackbar } from "../redux/snackbarSlice";
 import { logout } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -136,7 +136,6 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
     try {
       notifications(token).then((res) => {
         setNotification(res.data);
-        console.log(notification);
       });
     } catch (error) {
       console.log(error);
@@ -146,6 +145,17 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
   useEffect(() => {
     getNotifications();
   }, []);
+
+  const handleClearNotifications = async () => {
+    try {
+      await clearNotifications(token);
+      setNotification([]);
+      dispatch(openSnackbar({ message: "Notifications cleared", severity: "success" }));
+    } catch (error) {
+      console.log(error);
+      dispatch(openSnackbar({ message: "Failed to clear notifications", severity: "error" }));
+    }
+  };
 
   useEffect(() => {
     if (!currentUser && !SignUpOpen) {
@@ -253,6 +263,7 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
           handleClose={notificationClose}
           currentUser={currentUser}
           notification={notification}
+          handleClearNotifications={handleClearNotifications}
         />
       )}
     </>

@@ -51,6 +51,7 @@ export const likePost = async (id, token) => await API.put(`/community/like/${id
 export const deletePost = async (id, token) => await API.delete(`/community/${id}`, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const searchUsers = async (search, token) => await API.get(`users/search/${encodeURIComponent(search)}`, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const notifications = async (token) => await API.get('/users/notifications', { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
+export const clearNotifications = async (token) => await API.delete('/users/notifications', { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const addComment = async (data, token) => await API.post("/community/comments", data, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const getComments = async (postId, token) => await API.get(`/community/comments/${postId}`, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const getProjects = async (token) => await API.get(`/users/projects`, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
@@ -62,6 +63,8 @@ export const createProject = async (project, token) => await API.post('project/'
 export const getProjectDetails = async (id, token) => await API.get(`/project/${id}`, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const inviteProjectMembers = async (id, members, token) => await API.post(`/project/invite/${id}`, members, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const addWorks = async (id, works, token) => await API.post(`/project/works/${id}`, works, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
+export const addProjectDocument = async (id, data, token) => await API.post(`/project/${id}/documents`, data, { headers: { Authorization: `Bearer ${token}` } }, { withCredentials: true });
+export const deleteProjectDocument = async (id, docId, token) => await API.delete(`/project/${id}/documents/${docId}`, { headers: { Authorization: `Bearer ${token}` } }, { withCredentials: true });
 export const getWorks = async (id, token) => await API.get(`/project/works/${id}`, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const verifyProjectInvite = async (code, projectid, userid, access, role) => await API.get(`/project/invite/${code}?projectid=${projectid}&userid=${userid}&access=${access}&role=${role}`, { withCredentials: true });
 export const updateProject = async (id, project, token) => await API.patch(`/project/${id}`, project, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });

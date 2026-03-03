@@ -151,6 +151,26 @@ export const getNotifications = async (req, res, next) => {
   }
 }
 
+export const deleteNotifications = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    // Optionally delete the notification documents from the Notifications collection
+    if (user.notifications && user.notifications.length > 0) {
+      await Notifications.deleteMany({ _id: { $in: user.notifications } });
+    }
+
+    // Clear the user's notifications array
+    user.notifications = [];
+    await user.save();
+
+    res.status(200).json({ message: "Notifications cleared successfully." });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
 
 
 //fetch all the works of the user

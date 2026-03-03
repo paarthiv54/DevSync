@@ -1,315 +1,426 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Description, Add, Launch, Delete } from '@mui/icons-material';
-import { CircularProgress, IconButton, Tooltip } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { updateProject } from '../api';
-import { storage } from '../firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  Add,
+  InsertDriveFile,
+  PictureAsPdf,
+  Description,
+  Link as LinkIcon,
+  DeleteOutline
+} from '@mui/icons-material';
+import { Modal, IconButton, CircularProgress } from '@mui/material';
 import { openSnackbar } from '../redux/snackbarSlice';
-import { GalaxyButton } from './CreativeComponents';
+import { addProjectDocument, deleteProjectDocument } from '../api';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  animation: fadeIn 0.5s ease-out;
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  padding: 20px 0px;
 `;
 
-const TopBar = styled.div`
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 24px;
 `;
 
 const Title = styled.h2`
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: ${({ theme }) => theme.text};
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin: 0;
 `;
 
-const DocumentsGrid = styled.div`
+const AddButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: ${({ theme }) => theme.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background-color: ${({ theme }) => theme.bgLighter};
+  border-radius: 12px;
+  border: 1px dashed ${({ theme }) => theme.soft2};
+  color: ${({ theme }) => theme.textSoft};
+  text-align: center;
+`;
+
+const DocumentGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 `;
 
-const DocumentCard = styled.a`
-  background: ${({ theme }) => theme.bgLighter};
-  border: 1px solid ${({ theme }) => theme.soft};
-  border-radius: 16px;
-  padding: 20px;
+const DocCard = styled.a`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  background-color: ${({ theme }) => theme.bgLighter};
+  border: 1px solid ${({ theme }) => theme.soft};
+  border-radius: 12px;
+  padding: 16px;
   text-decoration: none;
   color: inherit;
-  transition: all 0.2s ease;
+  transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    border-color: ${({ theme }) => theme.primary};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: ${({ theme }) => theme.primary + '80'};
   }
 `;
 
-const DocIconWrapper = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: ${({ theme }) => theme.primary + '15'};
-  color: ${({ theme }) => theme.primary};
+const DocHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+`;
+
+const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: ${({ theme, format }) => {
+    if (format === 'PDF') return '#ef444420';
+    if (format === 'Google Doc') return '#3b82f620';
+    if (format === 'PPT') return '#f59e0b20';
+    return theme.primary + '20';
+  }};
+  color: ${({ theme, format }) => {
+    if (format === 'PDF') return '#ef4444';
+    if (format === 'Google Doc') return '#3b82f6';
+    if (format === 'PPT') return '#f59e0b';
+    return theme.primary;
+  }};
 `;
 
-const DocTitle = styled.h4`
+const DocInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const DocName = styled.h3`
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   color: ${({ theme }) => theme.text};
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-const DocDate = styled.p`
+const DocDate = styled.div`
   font-size: 12px;
   color: ${({ theme }) => theme.textSoft};
-  margin: 0;
 `;
 
-const AddDocumentForm = styled.div`
-  background: ${({ theme }) => theme.bgLighter};
-  border: 1px dashed ${({ theme }) => theme.primary};
-  border-radius: 16px;
+const DeleteBtn = styled(IconButton)`
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  color: ${({ theme }) => theme.textSoft} !important;
+  opacity: 0;
+  transition: opacity 0.2s !important;
+
+  ${DocCard}:hover & {
+    opacity: 1;
+  }
+
+  &:hover {
+    color: #ef4444 !important;
+    background-color: #ef444420 !important;
+  }
+`;
+
+// Modal Styles
+const ModalContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: ${({ theme }) => theme.bgLighter};
+  border-radius: 12px;
   padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  outline: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 450px) {
+    width: 90%;
+  }
+`;
+
+const ModalTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text};
+  margin: 0 0 20px 0;
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Label = styled.label`
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.textSoft};
+  margin-bottom: 8px;
 `;
 
 const Input = styled.input`
   width: 100%;
+  padding: 10px 14px;
+  background-color: ${({ theme }) => theme.bgDark};
   border: 1px solid ${({ theme }) => theme.soft};
-  background: ${({ theme }) => theme.bg};
-  color: ${({ theme }) => theme.text};
   border-radius: 8px;
-  padding: 12px 16px;
+  color: ${({ theme }) => theme.text};
   font-size: 14px;
   outline: none;
+
   &:focus {
     border-color: ${({ theme }) => theme.primary};
   }
 `;
 
-const ActionRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-`;
-
-const CancelButton = styled.button`
-  background: transparent;
-  color: ${({ theme }) => theme.textSoft};
-  border: none;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 16px;
+const Select = styled.select`
+  width: 100%;
+  padding: 10px 14px;
+  background-color: ${({ theme }) => theme.bgDark};
+  border: 1px solid ${({ theme }) => theme.soft};
   border-radius: 8px;
-  &:hover {
-    background: ${({ theme }) => theme.soft};
-    color: ${({ theme }) => theme.text};
+  color: ${({ theme }) => theme.text};
+  font-size: 14px;
+  outline: none;
+
+  &:focus {
+    border-color: ${({ theme }) => theme.primary};
   }
 `;
 
-const ProjectDocuments = ({ project, setProject, token }) => {
-    const dispatch = useDispatch();
-    const [showAddForm, setShowAddForm] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [newDocName, setNewDocName] = useState("");
-    const [newDocLink, setNewDocLink] = useState("");
-    const [file, setFile] = useState(null);
-    const [uploadProgress, setUploadProgress] = useState(0);
+const ModalActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+`;
 
-    const handleAddDocument = async () => {
-        if (!newDocName.trim() || (!newDocLink.trim() && !file)) {
-            dispatch(openSnackbar({ message: "Please provide a document name and either a link or select a file", type: "error" }));
-            return;
-        }
+const SubmitButton = styled.button`
+  padding: 8px 20px;
+  background-color: ${({ theme }) => theme.primary};
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-        setLoading(true);
-        try {
-            let finalLink = newDocLink;
+  &:disabled {
+    background-color: ${({ theme }) => theme.soft};
+    cursor: not-allowed;
+  }
+`;
 
-            if (file) {
-                const fileName = new Date().getTime() + "_" + file.name;
-                const storageRef = ref(storage, 'projects/documents/' + fileName);
-                const uploadTask = uploadBytesResumable(storageRef, file);
+const ProjectDocuments = ({ project, setProject }) => {
+  const dispatch = useDispatch();
+  const [openModal, setOpenModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    format: 'Link',
+    link: ''
+  });
 
-                finalLink = await new Promise((resolve, reject) => {
-                    uploadTask.on(
-                        "state_changed",
-                        (snapshot) => {
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            setUploadProgress(Math.round(progress));
-                        },
-                        (error) => {
-                            reject(error);
-                        },
-                        async () => {
-                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                            resolve(downloadURL);
-                        }
-                    );
-                });
-            }
+  const { currentUser } = useSelector((state) => state.user);
 
-            const newDocument = {
-                name: newDocName,
-                link: finalLink,
-                uploadedAt: new Date().toISOString()
-            };
+  const currentUserAccess = project?.members?.find(
+    (m) => m.id?._id === currentUser?._id || m.id === currentUser?._id
+  )?.access;
 
-            const updatedDocuments = [...(project.documents || []), newDocument];
+  // Note: Assuming Owner, Admin, Editor can add/delete.
+  const canManage = ["Owner", "Admin", "Editor"].includes(currentUserAccess);
 
-            const res = await updateProject(project._id, { documents: updatedDocuments }, token);
+  const getFormatIcon = (format) => {
+    switch (format) {
+      case 'PDF': return <PictureAsPdf />;
+      case 'Google Doc': return <Description />;
+      case 'PPT': return <InsertDriveFile />;
+      default: return <LinkIcon />;
+    }
+  };
 
-            setProject(res.data.project);
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.link) {
+      dispatch(openSnackbar({ message: "Name and Link are required.", type: "error" }));
+      return;
+    }
 
-            setNewDocName("");
-            setNewDocLink("");
-            setFile(null);
-            setUploadProgress(0);
-            setShowAddForm(false);
-            dispatch(openSnackbar({ message: "Document added successfully", type: "success" }));
-        } catch (err) {
-            console.error(err);
-            dispatch(openSnackbar({ message: err.response?.data?.message || err.message, type: "error" }));
-        } finally {
-            setLoading(false);
-        }
-    };
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await addProjectDocument(project._id, formData, token);
+      setProject(res.data.project);
+      dispatch(openSnackbar({ message: "Document added successfully!", type: "success" }));
+      setOpenModal(false);
+      setFormData({ name: '', format: 'Link', link: '' });
+    } catch (err) {
+      dispatch(openSnackbar({
+        message: err.response?.data?.message || err.message,
+        type: "error"
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleDeleteDocument = async (e, index) => {
-        e.preventDefault(); // Prevent opening link
-        if (!window.confirm("Are you sure you want to remove this document link?")) return;
+  const handleDelete = async (e, docId) => {
+    e.preventDefault(); // Prevent navigating to the link
+    if (!window.confirm("Are you sure you want to remove this document link?")) return;
 
-        setLoading(true);
-        try {
-            const updatedDocuments = [...(project.documents || [])];
-            updatedDocuments.splice(index, 1);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await deleteProjectDocument(project._id, docId, token);
+      setProject(res.data.project);
+      dispatch(openSnackbar({ message: "Document removed.", type: "success" }));
+    } catch (err) {
+      dispatch(openSnackbar({
+        message: err.response?.data?.message || err.message,
+        type: "error"
+      }));
+    }
+  };
 
-            const res = await updateProject(project._id, { documents: updatedDocuments }, token);
-            setProject(res.data.project);
+  return (
+    <Container>
+      <Header>
+        <Title>Project Documents</Title>
+        {canManage && (
+          <AddButton onClick={() => setOpenModal(true)}>
+            <Add sx={{ fontSize: 20 }} /> Add Document
+          </AddButton>
+        )}
+      </Header>
 
-            dispatch(openSnackbar({ message: "Document removed successfully", type: "success" }));
-        } catch (err) {
-            dispatch(openSnackbar({ message: err.response?.data?.message || err.message, type: "error" }));
-        } finally {
-            setLoading(false);
-        }
-    };
+      {!project?.documents || project.documents.length === 0 ? (
+        <EmptyState>
+          <InsertDriveFile sx={{ fontSize: 48, color: 'inherit', mb: 2 }} />
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', color: 'inherit' }}>No documents attached</h3>
+          <p style={{ margin: 0, fontSize: '14px' }}>
+            Add links to Google Docs, Dropbox files, or external resources.
+          </p>
+        </EmptyState>
+      ) : (
+        <DocumentGrid>
+          {project.documents.map((doc) => (
+            <DocCard key={doc._id} href={doc.link} target="_blank" rel="noopener noreferrer">
+              <DocHeader>
+                <IconWrapper format={doc.format}>
+                  {getFormatIcon(doc.format)}
+                </IconWrapper>
+                <DocInfo>
+                  <DocName>{doc.name}</DocName>
+                  <DocDate>{new Date(doc.dateAdded).toLocaleDateString()}</DocDate>
+                </DocInfo>
+              </DocHeader>
 
-    return (
-        <Container>
-            <TopBar>
-                <Title><Description /> Project Documents</Title>
-                <GalaxyButton onClick={() => setShowAddForm(!showAddForm)}>
-                    <Add /> Add Document
-                </GalaxyButton>
-            </TopBar>
+              <div style={{ fontSize: '12px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <LinkIcon sx={{ fontSize: 14 }} /> {doc.format}
+              </div>
 
-            {showAddForm && (
-                <AddDocumentForm>
-                    <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Add New Document</h4>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#888' }}>Upload a file or provide an external link to Seminar Reports, PPTs, or any other online document (Google Drive, OneDrive, etc.)</p>
-                    <Input
-                        placeholder="Document Name (e.g. Seminar 1 Report)"
-                        value={newDocName}
-                        onChange={(e) => setNewDocName(e.target.value)}
-                    />
+              {canManage && (
+                <DeleteBtn size="small" onClick={(e) => handleDelete(e, doc._id)}>
+                  <DeleteOutline sx={{ fontSize: 20 }} />
+                </DeleteBtn>
+              )}
+            </DocCard>
+          ))}
+        </DocumentGrid>
+      )}
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, color: '#aaa' }}>Option 1: Upload a File</span>
-                        <Input
-                            type="file"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
-                        />
-                    </div>
+      {/* Add Document Modal */}
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <ModalContainer>
+          <ModalTitle>Add Document Link</ModalTitle>
+          <form onSubmit={handleAdd}>
+            <FormGroup>
+              <Label>Document Name</Label>
+              <Input
+                autoFocus
+                placeholder="e.g. Project Proposal Q3"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+            </FormGroup>
 
-                    <div style={{ textAlign: 'center', color: '#888', fontSize: '12px' }}>OR</div>
+            <FormGroup>
+              <Label>Document Format</Label>
+              <Select
+                value={formData.format}
+                onChange={(e) => setFormData({ ...formData, format: e.target.value })}
+              >
+                <option value="Link">External Link</option>
+                <option value="Google Doc">Google Doc / Sheet</option>
+                <option value="PDF">Google Drive PDF</option>
+                <option value="PPT">Presentation (PPT)</option>
+              </Select>
+            </FormGroup>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, color: '#aaa' }}>Option 2: Provide a Link</span>
-                        <Input
-                            placeholder="External Link URL (e.g. https://docs.google.com/...)"
-                            value={newDocLink}
-                            onChange={(e) => setNewDocLink(e.target.value)}
-                            disabled={!!file}
-                        />
-                    </div>
+            <FormGroup>
+              <Label>URL Link</Label>
+              <Input
+                placeholder="https://..."
+                type="url"
+                value={formData.link}
+                onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                required
+              />
+            </FormGroup>
 
-                    {uploadProgress > 0 && uploadProgress < 100 && (
-                        <div style={{ width: '100%', backgroundColor: '#333', borderRadius: '4px', height: '6px', marginTop: '10px' }}>
-                            <div style={{ width: `${uploadProgress}%`, backgroundColor: '#3b82f6', height: '100%', borderRadius: '4px', transition: 'width 0.2s' }}></div>
-                        </div>
-                    )}
-
-                    <ActionRow>
-                        <CancelButton onClick={() => setShowAddForm(false)}>Cancel</CancelButton>
-                        <GalaxyButton onClick={handleAddDocument} disabled={loading} style={{ padding: '8px 24px', fontSize: '14px' }}>
-                            {loading ? <CircularProgress size={20} color="inherit" /> : "Save Link"}
-                        </GalaxyButton>
-                    </ActionRow>
-                </AddDocumentForm>
-            )}
-
-            {(!project.documents || project.documents.length === 0) && !showAddForm ? (
-                <div style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: '16px' }}>
-                    <Description sx={{ fontSize: 48, color: '#666', marginBottom: '16px' }} />
-                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px' }}>No documents yet</h3>
-                    <p style={{ margin: 0, color: '#888', fontSize: '14px' }}>Add links to your PPTs, seminar reports, or project documentation.</p>
-                </div>
-            ) : (
-                <DocumentsGrid>
-                    {project.documents?.map((doc, index) => (
-                        <DocumentCard key={index} href={doc.link} target="_blank" rel="noopener noreferrer">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <DocIconWrapper>
-                                    <Description />
-                                </DocIconWrapper>
-                                <div style={{ display: 'flex', gap: '4px' }}>
-                                    <Tooltip title="Remove Document">
-                                        <IconButton size="small" onClick={(e) => handleDeleteDocument(e, index)} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
-                                            <Delete fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <IconButton size="small" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'inherit' }}>
-                                        <Launch fontSize="small" />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <DocTitle>{doc.name}</DocTitle>
-                            <DocDate>Added {new Date(doc.uploadedAt || doc.createdAt).toLocaleDateString()}</DocDate>
-                        </DocumentCard>
-                    ))}
-                </DocumentsGrid>
-            )}
-        </Container>
-    );
+            <ModalActions>
+              <SubmitButton
+                type="button"
+                onClick={() => setOpenModal(false)}
+                style={{ backgroundColor: 'transparent', color: '#888' }}
+              >
+                Cancel
+              </SubmitButton>
+              <SubmitButton type="submit" disabled={loading}>
+                {loading ? <CircularProgress size={20} color="inherit" /> : 'Add Document'}
+              </SubmitButton>
+            </ModalActions>
+          </form>
+        </ModalContainer>
+      </Modal>
+    </Container>
+  );
 };
 
 export default ProjectDocuments;

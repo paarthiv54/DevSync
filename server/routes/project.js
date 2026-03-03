@@ -1,5 +1,5 @@
 import express from "express";
-import { addProject, deleteProject, getProject, updateProject, updateProjectStages, removeMember, inviteProjectMember, verifyInvitation, getProjectMembers, addWork, getWorks, updateMembers, updateTaskStatus, updateWorkStatus, deleteTask, deleteWork, addNewTask, updateTask, startTimer, stopTimer, getWorkloadStats, createSnapshot, getSnapshots, getGitHubActivity, warpDriveProject } from "../controllers/project.js";
+import { addProject, deleteProject, getProject, updateProject, updateProjectStages, removeMember, inviteProjectMember, verifyInvitation, getProjectMembers, addWork, getWorks, updateMembers, updateTaskStatus, updateWorkStatus, deleteTask, deleteWork, addNewTask, updateTask, startTimer, stopTimer, getWorkloadStats, createSnapshot, getSnapshots, getGitHubActivity, warpDriveProject, addProjectDocument, deleteProjectDocument } from "../controllers/project.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { localVariables } from "../middleware/auth.js";
 
@@ -23,6 +23,10 @@ router.patch("/:id/stages", verifyToken, updateProjectStages)
 router.patch("/member/:id", verifyToken, updateMembers)
 //remove a project member
 router.patch("/member/remove/:id", verifyToken, removeMember)
+
+// documents
+router.post("/:id/documents", verifyToken, addProjectDocument)
+router.delete("/:id/documents/:docId", verifyToken, deleteProjectDocument)
 
 //invite a  project
 router.post("/invite/:id", verifyToken, localVariables, inviteProjectMember)

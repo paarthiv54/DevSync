@@ -68,24 +68,6 @@ const ProjectSchema = new mongoose.Schema({
         }],
         default: [],
     },
-    documents: {
-        type: [{
-            _id: true,
-            link: {
-                type: String,
-                required: true,
-            },
-            name: {
-                type: String,
-                required: true,
-            },
-            uploadedAt: {
-                type: Date,
-                default: Date.now,
-            }
-        }],
-        default: [],
-    },
     members: {
         type: [{
             _id: false,
@@ -106,6 +88,15 @@ const ProjectSchema = new mongoose.Schema({
             }
         }],
         required: true,
+        default: [],
+    },
+    documents: {
+        type: [{
+            name: { type: String, required: true },
+            format: { type: String, default: "Link" },
+            link: { type: String, required: true },
+            dateAdded: { type: Date, default: Date.now }
+        }],
         default: [],
     },
     organizationId: {
