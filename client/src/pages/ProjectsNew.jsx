@@ -4,7 +4,7 @@ import styled, { keyframes, useTheme, css } from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { Add, Search, FilterList, Sort } from "@mui/icons-material";
 import { CircularProgress, Avatar, LinearProgress, IconButton } from "@mui/material";
-import { getProjects } from "../api";
+import { getProjects, userTasks } from "../api";
 import { openSnackbar } from "../redux/snackbarSlice";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { format } from "timeago.js";
@@ -259,6 +259,7 @@ const ProjectsNew = ({ setNewProject }) => { // Accepting setNewProject prop to 
 
   const theme = useTheme();
   const [data, setData] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
@@ -269,8 +270,12 @@ const ProjectsNew = ({ setNewProject }) => { // Accepting setNewProject prop to 
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const res = await getProjects(token);
-        setData(res.data);
+        const [projRes, taskRes] = await Promise.all([
+          getProjects(token),
+          userTasks(token)
+        ]);
+        setData(projRes.data);
+        setTasks(taskRes.data);
         setLoading(false);
       } catch (err) {
         dispatch(openSnackbar({ message: err.response?.data?.message || err.message, type: "error" }));
@@ -280,10 +285,17 @@ const ProjectsNew = ({ setNewProject }) => { // Accepting setNewProject prop to 
     fetchData();
   }, [currentUser, dispatch]);
 
-  const getProgress = (status) => {
+  const getProgress = (projectId, status) => {
     if (status === "Completed") return 100;
-    if (status === "In Progress") return 60;
-    return 30;
+
+    const projectTasks = tasks.filter(t => t.projectId === projectId);
+    if (projectTasks.length === 0) {
+      if (status === "In Progress") return 60;
+      return 30;
+    }
+
+    const completedCount = projectTasks.filter(t => t.status === "Completed" || t.status === "Done").length;
+    return Math.round((completedCount / projectTasks.length) * 100);
   };
 
   const filteredData = Array.isArray(data) ? data.filter(project => {
@@ -351,9 +363,9 @@ const ProjectsNew = ({ setNewProject }) => { // Accepting setNewProject prop to 
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: theme.textSoft }}>
                       <span>Progress</span>
-                      <span>{getProgress(project.status)}%</span>
+                      <span>{getProgress(project._id, project.status)}%</span>
                     </div>
-                    <PremiumProgress value={getProgress(project.status)} />
+                    <PremiumProgress value={getProgress(project._id, project.status)} />
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: `1px solid ${theme.soft}` }}>

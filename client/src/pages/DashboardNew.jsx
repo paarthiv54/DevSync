@@ -312,10 +312,17 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
     const pendingTasks = data.tasks.filter((t) => t.status !== "Completed" && t.status !== "Done").length;
 
     // Helper for visual progress bar
-    const getProgress = (status) => {
+    const getProgress = (projectId, status) => {
         if (status === "Completed") return 100;
-        if (status === "In Progress") return 60;
-        return 30; // Default/Start
+
+        const projectTasks = data.tasks.filter(t => t.projectId === projectId);
+        if (projectTasks.length === 0) {
+            if (status === "In Progress") return 60;
+            return 30; // Default/Start
+        }
+
+        const completedCount = projectTasks.filter(t => t.status === "Completed" || t.status === "Done").length;
+        return Math.round((completedCount / projectTasks.length) * 100);
     };
 
     return (
@@ -437,9 +444,9 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
                                     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: theme.textSoft }}>
                                             <span>Progress</span>
-                                            <span>{getProgress(project.status)}%</span>
+                                            <span>{getProgress(project._id, project.status)}%</span>
                                         </div>
-                                        <PremiumProgress value={getProgress(project.status)} />
+                                        <PremiumProgress value={getProgress(project._id, project.status)} />
                                     </div>
 
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: `1px solid ${theme.soft}` }}>

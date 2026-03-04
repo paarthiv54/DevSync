@@ -597,7 +597,7 @@ const AddNewProject = ({ setNewProject, teamId, teamProject }) => {
 
       setTimeout(() => {
         setNewProject(false);
-        window.location.replace(`/project/${res.data.projectId}`);
+        window.location.replace(`/projects/${res.data.projectId}`);
       }, 1500);
 
     } catch (err) {

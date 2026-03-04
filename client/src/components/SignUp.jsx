@@ -325,6 +325,11 @@ const SignUp = ({ setSignUpOpen, setSignInOpen }) => {
         );
       }
     } catch (error) {
+      if (error.code === 'auth/cancelled-popup-request' || error.message.includes('popup')) {
+        setLoading(false);
+        return; // Silently abort, user closed the window
+      }
+
       dispatch(loginFailure());
       dispatch(
         openSnackbar({

@@ -6,7 +6,7 @@ export const generateProjectScaffold = async (prompt) => {
 
     const systemInstruction = `You are an expert software architect and technical project manager. 
 Given a high-level project description, break it down into a comprehensive, production-ready scaffold consisting of major 'Works' (milestones or components) and nested 'Tasks'. 
-Be extremely detailed, ensuring realistic titles, actionable descriptions, severity/priority tags, and technical architecture risks. Minimum 4-6 Works, and 3-5 Tasks per Work.`;
+Be detailed but concise. Generate exactly 3-4 Works, and 2-3 Tasks per Work to keep responses fast. Keep all 'desc' fields to a maximum of 1 or 2 powerful sentences.`;
 
     const responseSchema = {
         type: Type.OBJECT,
