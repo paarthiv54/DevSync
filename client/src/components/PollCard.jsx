@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { CircularProgress } from "@mui/material";
-import { votePoll } from "../api";
+import { CircularProgress, IconButton } from "@mui/material";
+import { DeleteOutline } from "@mui/icons-material";
+import { votePoll, deletePoll } from "../api";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
-import PollCard from "./PollCard";
 
 const Container = styled.div`
   background-color: ${({ theme }) => theme.card};
@@ -88,33 +88,61 @@ const UserVote = styled.div`
   text-align: right;
 `;
 
+const DeleteBtn = styled(IconButton)`
+  color: ${({ theme }) => theme.textSoft} !important;
+  padding: 2px !important;
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s;
+  &:hover {
+    opacity: 1;
+    color: #ef4444 !important;
+  }
+`;
+
 const PollComponent = ({ poll, teamId, currentUserId, onVote }) => {
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const dispatch = useDispatch();
 
   const totalVotes = poll.options.reduce((acc, opt) => acc + opt.votes.length, 0);
   const userVotedOptionIndex = poll.options.findIndex(opt => opt.votes.includes(currentUserId));
 
   const handleVote = async (optionIndex) => {
-    if (userVotedOptionIndex === optionIndex) return; // Already voted this
-
+    if (userVotedOptionIndex === optionIndex) return;
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       await votePoll(teamId, poll._id, optionIndex, token);
       dispatch(openSnackbar({ message: "Vote cast successfully", severity: "success" }));
-      onVote(); // Trigger refresh
+      onVote();
     } catch (err) {
       dispatch(openSnackbar({ message: err.response?.data?.message || "Error voting", severity: "error" }));
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const handleDelete = async () => {
+    setDeleteLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      await deletePoll(teamId, poll._id, token);
+      dispatch(openSnackbar({ message: "Poll deleted", severity: "success" }));
+      onVote(); // refresh
+    } catch (err) {
+      dispatch(openSnackbar({ message: err.response?.data?.message || "Error deleting poll", severity: "error" }));
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   return (
     <Container>
       <Header>
         <Question>{poll.question}</Question>
+        <DeleteBtn size="small" onClick={handleDelete} disabled={deleteLoading}>
+          {deleteLoading ? <CircularProgress size={14} color="inherit" /> : <DeleteOutline sx={{ fontSize: 18 }} />}
+        </DeleteBtn>
       </Header>
       <OptionsContainer>
         {poll.options.map((option, index) => {

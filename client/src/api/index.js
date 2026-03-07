@@ -99,6 +99,19 @@ export const updateTeamMembers = async (id, members, token) => await API.patch(`
 export const removeTeamMembers = async (id, members, token) => await API.patch(`/team/member/remove/${id}`, members, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const addPoll = async (id, poll, token) => await API.post(`/team/${id}/polls`, poll, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
 export const votePoll = async (id, pollId, optionIndex, token) => await API.patch(`/team/${id}/polls/vote`, { pollId, optionIndex }, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });
+export const deletePoll = async (id, pollId, token) => await API.patch(`/team/${id}/polls/delete`, { pollId }, { headers: { "Authorization": `Bearer ${token}` } });
+export const getTeamAnalytics = async (id, token) => await API.get(`/team/${id}/analytics`, { headers: { "Authorization": `Bearer ${token}` } });
+// Announcements
+export const addAnnouncement = async (id, data, token) => await API.post(`/team/${id}/announcements`, data, { headers: { "Authorization": `Bearer ${token}` } });
+export const deleteAnnouncement = async (id, announcementId, token) => await API.patch(`/team/${id}/announcements/delete`, { announcementId }, { headers: { "Authorization": `Bearer ${token}` } });
+// Meeting Notes
+export const addMeetingNote = async (id, data, token) => await API.post(`/team/${id}/meeting-notes`, data, { headers: { "Authorization": `Bearer ${token}` } });
+export const deleteMeetingNote = async (id, noteId, token) => await API.patch(`/team/${id}/meeting-notes/delete`, { noteId }, { headers: { "Authorization": `Bearer ${token}` } });
+// Resources
+export const addResource = async (id, data, token) => await API.post(`/team/${id}/resources`, data, { headers: { "Authorization": `Bearer ${token}` } });
+export const deleteResource = async (id, resourceId, token) => await API.patch(`/team/${id}/resources/delete`, { resourceId }, { headers: { "Authorization": `Bearer ${token}` } });
+
+
 
 //chat api
 export const createChat = async (data, token) => await API.post('/chat/', data, { headers: { "Authorization": `Bearer ${token}` } }, { withCredentials: true });

@@ -1,5 +1,13 @@
 import express from "express";
-import { addTeam, getTeam, deleteTeam, updateTeam, addTeamProject, inviteTeamMember, verifyInvitationTeam, getTeamMembers, removeMember, updateMembers, addPoll, votePoll } from "../controllers/teams.js";
+import {
+    addTeam, getTeam, deleteTeam, updateTeam, addTeamProject,
+    inviteTeamMember, verifyInvitationTeam, getTeamMembers,
+    removeMember, updateMembers, addPoll, votePoll, deletePoll,
+    addAnnouncement, deleteAnnouncement,
+    addMeetingNote, deleteMeetingNote,
+    addResource, deleteResource,
+    getTeamAnalytics
+} from "../controllers/teams.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { localVariables } from "../middleware/auth.js";
 
@@ -29,6 +37,18 @@ router.get("/members/:id", verifyToken, getTeamMembers)
 router.post("/:id/polls", verifyToken, addPoll);
 //vote poll
 router.patch("/:id/polls/vote", verifyToken, votePoll);
-
+//delete poll
+router.patch("/:id/polls/delete", verifyToken, deletePoll);
+//analytics
+router.get("/:id/analytics", verifyToken, getTeamAnalytics);
+//announcements
+router.post("/:id/announcements", verifyToken, addAnnouncement);
+router.patch("/:id/announcements/delete", verifyToken, deleteAnnouncement);
+//meeting notes
+router.post("/:id/meeting-notes", verifyToken, addMeetingNote);
+router.patch("/:id/meeting-notes/delete", verifyToken, deleteMeetingNote);
+//resources
+router.post("/:id/resources", verifyToken, addResource);
+router.patch("/:id/resources/delete", verifyToken, deleteResource);
 
 export default router;

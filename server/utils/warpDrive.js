@@ -4,46 +4,25 @@ export const generateProjectScaffold = async (prompt) => {
     // Initialize the Gemini client using the environment variable
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-    const systemInstruction = `You are an expert software architect and technical project manager. 
-Given a high-level project description, break it down into a comprehensive, production-ready scaffold consisting of major 'Works' (milestones or components) and nested 'Tasks'. 
-Be detailed but concise. Generate exactly 3-4 Works, and 2-3 Tasks per Work to keep responses fast. Keep all 'desc' fields to a maximum of 1 or 2 powerful sentences.`;
+    const systemInstruction = `You are an expert software architect. 
+Given a high-level project description, generate a professional project description and a list of relevant technology stack tags. 
+Keep the description concise, professional, and between 2-4 sentences. 
+For tags, list the primary programming languages, frameworks, and methodologies (e.g., React, Node.js, MongoDB, Agile).`;
 
     const responseSchema = {
         type: Type.OBJECT,
         properties: {
-            projectMeta: {
-                type: Type.OBJECT,
-                description: "Metadata for the overall project based on the prompt.",
-                properties: {
-                    desc: { type: Type.STRING, description: "A professional, fleshed-out description of the project." },
-                    tags: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Relevant technology stack and methodology tags (e.g., React, Stripe, Agile)." }
-                }
+            desc: {
+                type: Type.STRING,
+                description: "A professional, fleshed-out description of the project based on the user prompt."
             },
-            works: {
+            tags: {
                 type: Type.ARRAY,
-                description: "The major milestones or components of the project.",
-                items: {
-                    type: Type.OBJECT,
-                    properties: {
-                        title: { type: Type.STRING, description: "The title of the work component (e.g., 'Authentication System', 'Database Design')." },
-                        desc: { type: Type.STRING, description: "A detailed description of what this work component entails." },
-                        priority: { type: Type.STRING, enum: ["Low", "Medium", "High"], description: "The priority of this component." },
-                        tags: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Specific tech tags relevant to this component." },
-                        tasks: {
-                            type: Type.ARRAY,
-                            description: "The indivual tasks required to complete this work component.",
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    task: { type: Type.STRING, description: "The actionable task title." },
-                                    impact_risk: { type: Type.STRING, enum: ["Low", "Medium", "High", "Unknown"], description: "The technical risk or complexity associated with this task." }
-                                }
-                            }
-                        }
-                    }
-                }
+                items: { type: Type.STRING },
+                description: "Relevant technology stack tags and programming languages (e.g., React, Node.js, Python, Agile)."
             }
-        }
+        },
+        required: ["desc", "tags"]
     };
 
     try {
@@ -61,6 +40,6 @@ Be detailed but concise. Generate exactly 3-4 Works, and 2-3 Tasks per Work to k
         return JSON.parse(response.text);
     } catch (error) {
         console.error("Warp Drive Generation Error:", error);
-        throw new Error("Failed to generate project scaffold via AI.");
+        throw new Error("Failed to generate project details via AI.");
     }
 };

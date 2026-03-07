@@ -402,6 +402,9 @@ export const addPoll = async (req, res, next) => {
             { new: true }
         ).populate("members.id", "_id name email img");
 
+        // Log activity
+        await Teams.findByIdAndUpdate(req.params.id, { $push: { activity: { message: `📊 ${user.name} created a poll: "${req.body.question}"`, type: "info" } } });
+
         res.status(200).json(updatedTeam);
     } catch (err) {
         next(err);
@@ -446,3 +449,191 @@ export const votePoll = async (req, res, next) => {
         next(err);
     }
 };
+
+export const deletePoll = async (req, res, next) => {
+    try {
+        const { pollId } = req.body;
+        const userId = req.user.id;
+        const teamId = req.params.id;
+
+        console.log("Delete Poll Request:", { pollId, userId, teamId });
+
+        if (!pollId) return next(createError(400, "pollId is required"));
+
+        const user = await User.findById(userId);
+        const team = await Teams.findById(teamId);
+        if (!team) return next(createError(404, "Team not found!"));
+
+
+        // Support both populated and non-populated member.id
+        const member = team.members.find(m => {
+            const memberId = m.id?._id ? m.id._id.toString() : m.id.toString();
+            return memberId === userId;
+        });
+
+        console.log("Found member:", member);
+
+        if (!member) return next(createError(403, "You are not a member of this team!"));
+        if (!["Owner", "Admin"].includes(member.access)) {
+            return next(createError(403, "Only Owners and Admins can delete polls!"));
+        }
+
+        const pollToDelete = team.polls.id(pollId);
+        const pollQuestion = pollToDelete ? pollToDelete.question : "a poll";
+
+        await Teams.findByIdAndUpdate(
+            teamId,
+            {
+                $pull: { polls: { _id: pollId } },
+                $push: { activity: { message: `🗑️ ${user?.name || "Someone"} deleted poll: "${pollQuestion}"`, type: "info" } }
+            },
+            { new: true }
+        );
+
+        res.status(200).json({ message: "Poll deleted successfully" });
+    } catch (err) {
+        console.error("Delete Poll Error:", err);
+        next(err);
+    }
+};
+
+// ===================== ANNOUNCEMENTS =====================
+export const addAnnouncement = async (req, res, next) => {
+    try {
+        const { title, desc, pinned } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) return next(createError(404, "User not found"));
+        const team = await Teams.findById(req.params.id);
+        if (!team) return next(createError(404, "Team not found!"));
+        const member = team.members.find(m => m.id.toString() === req.user.id);
+        if (!member || !["Owner", "Admin"].includes(member.access))
+            return next(createError(403, "Only Owners/Admins can post announcements"));
+        const announcement = { title, desc: desc || "", pinned: pinned || false, createdBy: user._id, createdByName: user.name };
+        const updated = await Teams.findByIdAndUpdate(req.params.id, { $push: { announcements: announcement } }, { new: true });
+        // Log activity
+        await Teams.findByIdAndUpdate(req.params.id, { $push: { activity: { message: `📢 ${user.name} posted an announcement: "${title}"`, type: "info" } } });
+        res.status(200).json(updated);
+    } catch (err) { next(err); }
+};
+
+export const deleteAnnouncement = async (req, res, next) => {
+    try {
+        const { announcementId } = req.body;
+        const user = await User.findById(req.user.id);
+        const team = await Teams.findById(req.params.id);
+        if (!team) return next(createError(404, "Team not found!"));
+        const member = team.members.find(m => m.id.toString() === req.user.id);
+        if (!member || !["Owner", "Admin"].includes(member.access))
+            return next(createError(403, "Only Owners/Admins can delete announcements"));
+        // Find the announcement title before deleting
+        const ann = team.announcements.id(announcementId);
+        const annTitle = ann ? ann.title : "an announcement";
+        await Teams.findByIdAndUpdate(req.params.id, {
+            $pull: { announcements: { _id: announcementId } },
+            $push: { activity: { message: `🗑️ ${user?.name || "Someone"} deleted announcement: "${annTitle}"`, type: "info" } }
+        });
+        res.status(200).json({ message: "Announcement deleted" });
+    } catch (err) { next(err); }
+};
+
+// ===================== MEETING NOTES =====================
+export const addMeetingNote = async (req, res, next) => {
+    try {
+        const { title, content } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) return next(createError(404, "User not found"));
+        const team = await Teams.findById(req.params.id);
+        if (!team) return next(createError(404, "Team not found!"));
+        const isMember = team.members.some(m => m.id.toString() === req.user.id);
+        if (!isMember) return next(createError(403, "You are not a member of this team!"));
+        const note = { title, content: content || "", createdBy: user._id, createdByName: user.name };
+        const updated = await Teams.findByIdAndUpdate(req.params.id, { $push: { meetingNotes: note } }, { new: true });
+        await Teams.findByIdAndUpdate(req.params.id, { $push: { activity: { message: `📝 ${user.name} added meeting notes: "${title}"`, type: "info" } } });
+        res.status(200).json(updated);
+    } catch (err) { next(err); }
+};
+
+export const deleteMeetingNote = async (req, res, next) => {
+    try {
+        const { noteId } = req.body;
+        const user = await User.findById(req.user.id);
+        const team = await Teams.findById(req.params.id);
+        if (!team) return next(createError(404, "Team not found!"));
+        const member = team.members.find(m => m.id.toString() === req.user.id);
+        if (!member || !["Owner", "Admin"].includes(member.access))
+            return next(createError(403, "Only Owners/Admins can delete meeting notes"));
+        const note = team.meetingNotes.id(noteId);
+        const noteTitle = note ? note.title : "a meeting note";
+        await Teams.findByIdAndUpdate(req.params.id, {
+            $pull: { meetingNotes: { _id: noteId } },
+            $push: { activity: { message: `🗑️ ${user?.name || "Someone"} deleted meeting note: "${noteTitle}"`, type: "info" } }
+        });
+        res.status(200).json({ message: "Meeting note deleted" });
+    } catch (err) { next(err); }
+};
+
+// ===================== RESOURCES =====================
+export const addResource = async (req, res, next) => {
+    try {
+        const { title, url, category } = req.body;
+        const user = await User.findById(req.user.id);
+        if (!user) return next(createError(404, "User not found"));
+        const team = await Teams.findById(req.params.id);
+        if (!team) return next(createError(404, "Team not found!"));
+        const isMember = team.members.some(m => m.id.toString() === req.user.id);
+        if (!isMember) return next(createError(403, "You are not a member of this team!"));
+        const resource = { title, url, category: category || "General", addedBy: user._id, addedByName: user.name };
+        const updated = await Teams.findByIdAndUpdate(req.params.id, { $push: { resources: resource } }, { new: true });
+        await Teams.findByIdAndUpdate(req.params.id, { $push: { activity: { message: `🔗 ${user.name} added a resource: "${title}"`, type: "info" } } });
+        res.status(200).json(updated);
+    } catch (err) { next(err); }
+};
+
+export const deleteResource = async (req, res, next) => {
+    try {
+        const { resourceId } = req.body;
+        const user = await User.findById(req.user.id);
+        const team = await Teams.findById(req.params.id);
+        if (!team) return next(createError(404, "Team not found!"));
+        const isMember = team.members.some(m => m.id.toString() === req.user.id);
+        if (!isMember) return next(createError(403, "You are not a member"));
+        const resource = team.resources.id(resourceId);
+        const resourceTitle = resource ? resource.title : "a resource";
+        await Teams.findByIdAndUpdate(req.params.id, {
+            $pull: { resources: { _id: resourceId } },
+            $push: { activity: { message: `🗑️ ${user?.name || "Someone"} removed resource: "${resourceTitle}"`, type: "info" } }
+        });
+        res.status(200).json({ message: "Resource deleted" });
+    } catch (err) { next(err); }
+};
+
+// ===================== ANALYTICS =====================
+export const getTeamAnalytics = async (req, res, next) => {
+    try {
+        const team = await Teams.findById(req.params.id).populate("members.id", "_id name img").populate("projects");
+        if (!team) return next(createError(404, "Team not found!"));
+        const isMember = team.members.some(m => m.id._id?.toString() === req.user.id || m.id.toString() === req.user.id);
+        if (!isMember) return next(createError(403, "Not a member"));
+
+        const Tasks = (await import("../models/Tasks.js")).default;
+        const projectIds = team.projects.map(p => p._id || p);
+        const tasks = await Tasks.find({ projectId: { $in: projectIds } });
+
+        // Per-member stats
+        const memberStats = team.members.map(m => {
+            const memberId = m.id._id?.toString() || m.id.toString();
+            const memberName = m.id.name || "Unknown";
+            const memberImg = m.id.img || "";
+            const assigned = tasks.filter(t => t.members?.some(tm => tm.toString() === memberId));
+            const completed = assigned.filter(t => t.status === "Completed" || t.status === "Done");
+            return { id: memberId, name: memberName, img: memberImg, assigned: assigned.length, completed: completed.length };
+        });
+
+        const totalTasks = tasks.length;
+        const completedTasks = tasks.filter(t => t.status === "Completed" || t.status === "Done").length;
+        const projectStats = { total: team.projects.length, working: team.projects.filter(p => p.status === "Working").length, completed: team.projects.filter(p => p.status === "Completed").length };
+
+        res.status(200).json({ memberStats, totalTasks, completedTasks, projectStats, pollCount: team.polls.length });
+    } catch (err) { next(err); }
+};
+

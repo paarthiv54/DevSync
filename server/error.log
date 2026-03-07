@@ -35,3 +35,78 @@
     at generateProjectScaffold (file:///D:/Projects/projects/Project-Management-App/server/utils/warpDrive.js:64:15)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
     at async warpDriveProject (file:///D:/Projects/projects/Project-Management-App/server/controllers/project.js:1165:23)
+2026-03-05T04:47:23.000Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:24.164Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:24.785Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:25.579Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:38.919Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:39.058Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:43.191Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:43.217Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:43.255Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:43.266Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:53.226Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:57.378Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:57.404Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:57.415Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:47:57.423Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T04:48:07.421Z - MongooseError: Operation `users.findOne()` buffering timed out after 10000ms
+    at Timeout.<anonymous> (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:153:23)
+    at listOnTimeout (node:internal/timers:594:17)
+    at process.processTimers (node:internal/timers:529:7)
+2026-03-05T05:59:35.076Z - Error: User not found
+    at createError (file:///C:/Users/Paarthiv%20Ramaraju/OneDrive/Desktop/DevSync%20Major/server/error.js:2:17)
+    at signin (file:///C:/Users/Paarthiv%20Ramaraju/OneDrive/Desktop/DevSync%20Major/server/controllers/auth.js:123:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-03-05T07:35:47.606Z - TypeError: Cannot read properties of null (reading 'members')
+    at getTeam (file:///C:/Users/Paarthiv%20Ramaraju/OneDrive/Desktop/DevSync%20Major/server/controllers/teams.js:82:18)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-03-05T07:35:47.614Z - Error: Team not found!
+    at createError (file:///C:/Users/Paarthiv%20Ramaraju/OneDrive/Desktop/DevSync%20Major/server/error.js:2:17)
+    at getTeamAnalytics (file:///C:/Users/Paarthiv%20Ramaraju/OneDrive/Desktop/DevSync%20Major/server/controllers/teams.js:614:32)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

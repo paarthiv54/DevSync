@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes, useTheme } from "styled-components";
 import { Avatar, IconButton, Chip } from "@mui/material";
-import { Favorite, FavoriteBorder, ChatBubbleOutline, Share, MoreHoriz, Search, AddPhotoAlternate, Send } from "@mui/icons-material";
+import { Favorite, FavoriteBorder, ChatBubbleOutline, Share, MoreHoriz, Search, Send } from "@mui/icons-material";
 import { GalaxyButton, MagicCard, PremiumLoader } from "../components/CreativeComponents";
 import { useDispatch, useSelector } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
@@ -528,8 +528,6 @@ const CommunityNew = () => {
             </InputWrapper>
             <ActionsBar>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <ActionButton><AddPhotoAlternate sx={{ fontSize: 20 }} /> Media</ActionButton>
-                <ActionButton><FavoriteBorder sx={{ fontSize: 20 }} /> Feeling</ActionButton>
               </div>
               <GalaxyButton
                 style={{ padding: '8px 24px', fontSize: '14px' }}

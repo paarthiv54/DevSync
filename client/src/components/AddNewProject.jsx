@@ -79,6 +79,9 @@ const Desc = styled.textarea`
   color: ${({ theme }) => theme.text};
   resize: none;
   font-family: inherit;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 `;
 
 const Label = styled.div`
@@ -93,6 +96,7 @@ const OutlinedBox = styled.div`
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.soft2};
   color: ${({ theme }) => theme.soft2};
+  overflow: hidden;
   ${({ googleButton, theme }) =>
     googleButton &&
     `
@@ -397,11 +401,10 @@ const AddNewProject = ({ setNewProject, teamId, teamProject }) => {
 
   const warpSteps = [
     "Contacting AI Architect...",
-    "Analyzing Technical Requirements...",
-    "Scaffolding Project Schema...",
-    "Generating Milestones and Works...",
-    "Instantiating Task Atomic Elements...",
-    "Finalizing Database Relationships...",
+    "Analyzing Project Requirements...",
+    "Generating Professional Description...",
+    "Identifying Technology Stack...",
+    "Finalizing Language Tags...",
     "Stabilizing Wormhole..."
   ];
 
@@ -667,7 +670,7 @@ const AddNewProject = ({ setNewProject, teamId, teamProject }) => {
               {isWarpDrive ? (
                 <WarpContainer>
                   <div style={{ fontSize: '14px', color: '#888', fontStyle: 'italic' }}>
-                    Describe your project idea (e.g., "A modern coffee shop website with online ordering") and our AI will scaffold the entire task board for you.
+                    Describe your project idea and our AI will generate a professional <strong style={{ color: '#a855f7' }}>description</strong> and <strong style={{ color: '#a855f7' }}>technology tags</strong> for you instantly.
                   </div>
                   <WarpPromptArea
                     placeholder="Describe your vision here..."
@@ -703,7 +706,7 @@ const AddNewProject = ({ setNewProject, teamId, teamProject }) => {
                       onChange={handleChange}
                     />
                   </OutlinedBox>
-                  <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px" }}>
+                  <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px", overflow: "hidden" }}>
                     <Desc
                       placeholder="Tags: seperate by , eg- Mongo Db , React JS .."
                       name="tags"

@@ -1158,17 +1158,15 @@ export const warpDriveProject = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) return next(createError(404, "User not found"));
-    // if (!user.currentOrganization) return next(createError(400, "Please select an organization first"));
 
-
-    // 1. Generate the Scaffold via AI
+    // 1. Generate description and tags via AI
     const aiPayload = await generateProjectScaffold(prompt);
 
-    // 2. Create the Project
+    // 2. Create the Project with AI-generated description and tags
     const newProject = new Project({
-      title: "Warped Project: " + (aiPayload.projectMeta?.tags?.[0] || 'App'),
-      desc: aiPayload.projectMeta?.desc || prompt,
-      tags: aiPayload.projectMeta?.tags || [],
+      title: "Warped Project: " + (aiPayload.tags?.[0] || 'App'),
+      desc: aiPayload.desc || prompt,
+      tags: aiPayload.tags || [],
       members: [{ id: user.id, img: user.img, email: user.email, name: user.name, role: "d", access: "Owner" }],
       organizationId: user.currentOrganization
     });
@@ -1179,50 +1177,10 @@ export const warpDriveProject = async (req, res, next) => {
       await Organization.findByIdAndUpdate(user.currentOrganization, { $push: { projects: savedProject._id } });
     }
 
-    // 3. Create the Works and Tasks iteratively
-    const worksList = aiPayload.works || [];
-    let workIds = [];
-
-    for (const work of worksList) {
-      const newWork = new Works({
-        projectId: savedProject._id,
-        creatorId: user.id,
-        title: work.title,
-        desc: work.desc,
-        priority: work.priority || 'Medium',
-        tags: work.tags || [],
-        organizationId: user.currentOrganization
-      });
-      const savedWork = await newWork.save();
-      workIds.push(savedWork._id);
-
-      const tasksList = work.tasks || [];
-      let taskIds = [];
-      for (const t of tasksList) {
-        const newTask = new Tasks({
-          projectId: savedProject._id,
-          workId: savedWork._id.toString(),
-          task: t.task,
-          start_date: new Date().toISOString(), // Today
-          end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // +7 days
-          impact_risk: t.impact_risk || 'Unknown',
-          organizationId: user.currentOrganization,
-          status: 'Working'
-        });
-        const savedTask = await newTask.save();
-        taskIds.push(savedTask._id);
-      }
-
-      // Update work with task Ids
-      await Works.findByIdAndUpdate(savedWork._id, { $set: { tasks: taskIds } });
-    }
-
-    // Update Project with Works IDs
-    await Project.findByIdAndUpdate(savedProject._id, { $set: { works: workIds } });
-
     res.status(201).json({ message: "Warp Drive Sequence Completed", projectId: savedProject._id });
   } catch (err) {
     console.error("WARP DRIVE ERROR:", err);
     next(err);
   }
 };
+

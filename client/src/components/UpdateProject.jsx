@@ -78,6 +78,9 @@ const Desc = styled.textarea`
   color: ${({ theme }) => theme.textSoft};
   resize: none;
   font-family: inherit;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 `;
 
 const Label = styled.div`
@@ -92,6 +95,7 @@ const OutlinedBox = styled.div`
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.soft2};
   color: ${({ theme }) => theme.soft2};
+  overflow: hidden;
   ${({ googleButton, theme }) =>
         googleButton &&
         `
@@ -574,7 +578,7 @@ const UpdateProject = ({ openUpdate, setOpenUpdate }) => {
                                     onChange={handleChange}
                                 />
                             </OutlinedBox>
-                            <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px" }}>
+                            <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px", overflow: "hidden" }}>
                                 <Desc
                                     placeholder="Description (Required)* "
                                     name="desc"
@@ -583,7 +587,7 @@ const UpdateProject = ({ openUpdate, setOpenUpdate }) => {
                                     onChange={handleChange}
                                 />
                             </OutlinedBox>
-                            <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px" }}>
+                            <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px", overflow: "hidden" }}>
                                 <Desc
                                     placeholder="Tags: seperate by , eg- Mongo Db , React JS .."
                                     name="tags"

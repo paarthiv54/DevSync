@@ -6,7 +6,6 @@ import { Add, Search, FilterList, Sort } from "@mui/icons-material";
 import { CircularProgress, Avatar, LinearProgress, IconButton } from "@mui/material";
 import { getProjects, userTasks } from "../api";
 import { openSnackbar } from "../redux/snackbarSlice";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { format } from "timeago.js";
 import { MagicCard, GalaxyButton, PremiumLoader, PremiumProgress } from "../components/CreativeComponents";
 
@@ -143,6 +142,14 @@ const Tab = styled.button`
   }
 `;
 
+// Uniform-height grid wrapper
+const ProjectsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 24px;
+`;
+
 // Reuse the Premium Card from Dashboard
 const ProjectCardNew = styled.div`
   background: ${({ theme }) => theme.bgLighter};
@@ -152,6 +159,8 @@ const ProjectCardNew = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
+  min-height: 220px;
   border: 1px solid ${({ theme }) => theme.soft + "50"};
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   animation: ${fadeInUp} 0.5s ease-out;
@@ -342,62 +351,60 @@ const ProjectsNew = ({ setNewProject }) => { // Accepting setNewProject prop to 
           <PremiumLoader />
         </div>
       ) : (
-        <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
-          <Masonry gutter="24px">
-            {filteredData.map((project) => (
-              <Link to={`/projects/${project._id}`} key={project._id} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                <ProjectCardNew style={{ cursor: "pointer" }}>
-                  <ProjectHeader>
-                    <Tag color={theme.primary}>{project.tags?.[0] || "Development"}</Tag>
-                    <StatusBadge status={project.status}>{project.status}</StatusBadge>
-                  </ProjectHeader>
+        <ProjectsGrid>
+          {filteredData.map((project) => (
+            <Link to={`/projects/${project._id}`} key={project._id} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', height: '100%' }}>
+              <ProjectCardNew style={{ cursor: "pointer", flex: 1 }}>
+                <ProjectHeader>
+                  <Tag color={theme.primary}>{project.tags?.[0] || "Development"}</Tag>
+                  <StatusBadge status={project.status}>{project.status}</StatusBadge>
+                </ProjectHeader>
 
-                  <div>
-                    <ProjectTitle>{project.title}</ProjectTitle>
-                    <p style={{ fontSize: "14px", color: theme.textSoft, lineHeight: "1.6" }}>
-                      {project.desc?.length > 100 ? project.desc.slice(0, 100) + "..." : project.desc}
-                    </p>
-                  </div>
-
+                <div style={{ flex: 1 }}>
+                  <ProjectTitle>{project.title}</ProjectTitle>
+                  <p style={{ fontSize: "14px", color: theme.textSoft, lineHeight: "1.6" }}>
+                    {project.desc?.length > 100 ? project.desc.slice(0, 100) + "..." : project.desc}
+                  </p>
+                </div>
 
 
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: `1px solid ${theme.soft}` }}>
-                    <MemberGroup>
-                      {project.members?.slice(0, 3).map((member) => (
-                        <Avatar
-                          key={member._id}
-                          src={member.img}
-                          sx={{ width: 32, height: 32, border: `2px solid ${theme.bgLighter}`, marginLeft: "-10px" }}
-                        />
-                      ))}
-                      {project.members?.length > 3 && (
-                        <div
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "50%",
-                            background: theme.primary,
-                            color: "white",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "10px",
-                            border: `2px solid ${theme.bgLighter}`,
-                            marginLeft: "-10px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          +{project.members.length - 3}
-                        </div>
-                      )}
-                    </MemberGroup>
-                    <span style={{ fontSize: '12px', color: theme.textSoft }}>{project.updatedAt ? format(project.updatedAt) : 'Recently'}</span>
-                  </div>
-                </ProjectCardNew>
-              </Link>
-            ))}
-          </Masonry>
-        </ResponsiveMasonry>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: `1px solid ${theme.soft}` }}>
+                  <MemberGroup>
+                    {project.members?.slice(0, 3).map((member) => (
+                      <Avatar
+                        key={member._id}
+                        src={member.img}
+                        sx={{ width: 32, height: 32, border: `2px solid ${theme.bgLighter}`, marginLeft: "-10px" }}
+                      />
+                    ))}
+                    {project.members?.length > 3 && (
+                      <div
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          background: theme.primary,
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "10px",
+                          border: `2px solid ${theme.bgLighter}`,
+                          marginLeft: "-10px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        +{project.members.length - 3}
+                      </div>
+                    )}
+                  </MemberGroup>
+                  <span style={{ fontSize: '12px', color: theme.textSoft }}>{project.updatedAt ? format(project.updatedAt) : 'Recently'}</span>
+                </div>
+              </ProjectCardNew>
+            </Link>
+          ))}
+        </ProjectsGrid>
       )}
     </Container>
   );
