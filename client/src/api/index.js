@@ -127,3 +127,5 @@ export const aiGenerateTask = async (taskTitle, projectId, token) => await API.p
 export const aiSprintPlanner = async (projectId, token) => await API.post('/ai/sprint-planner', { projectId }, { headers: { "Authorization": `Bearer ${token}` } });
 export const getProjectAnalytics = async (projectId, token) => await API.get(`/ai/analytics/${projectId}`, { headers: { "Authorization": `Bearer ${token}` } });
 
+// File Upload
+export const uploadFile = async (data, token) => await API.post('/upload', data, { headers: { "Authorization": `Bearer ${token}`, "Content-Type": "multipart/form-data" } });

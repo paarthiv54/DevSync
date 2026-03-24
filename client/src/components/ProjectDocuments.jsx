@@ -7,13 +7,12 @@ import {
   PictureAsPdf,
   Description,
   Link as LinkIcon,
-  DeleteOutline
+  DeleteOutline,
+  Slideshow
 } from '@mui/icons-material';
 import { Modal, IconButton, CircularProgress } from '@mui/material';
 import { openSnackbar } from '../redux/snackbarSlice';
-import { addProjectDocument, deleteProjectDocument } from '../api';
-import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { addProjectDocument, deleteProjectDocument, uploadFile } from '../api';
 const Container = styled.div`
   padding: 20px 0px;
 `;
@@ -155,6 +154,79 @@ const DeleteBtn = styled(IconButton)`
   }
 `;
 
+const Backdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Dialog = styled.div`
+  background: ${({ theme }) => theme.bgLighter};
+  border: 1px solid ${({ theme }) => theme.soft + '80'};
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+`;
+
+const DialogTitle = styled.h3`
+  color: ${({ theme }) => theme.text};
+  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 600;
+`;
+
+const DialogText = styled.p`
+  color: ${({ theme }) => theme.textSoft};
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.5;
+`;
+
+const DialogActions = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+`;
+
+const CancelBtn = styled.button`
+  padding: 10px 24px;
+  background: transparent;
+  color: ${({ theme }) => theme.textSoft};
+  border: 1px solid ${({ theme }) => theme.soft};
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    background: ${({ theme }) => theme.soft + '40'};
+  }
+`;
+
+const DeleteConfirmBtn = styled.button`
+  padding: 10px 24px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  &:hover {
+    background: #dc2626;
+  }
+`;
+
 // Modal Styles
 const ModalContainer = styled.div`
   position: absolute;
@@ -260,6 +332,7 @@ const ProjectDocuments = ({ project, setProject }) => {
 
   const [file, setFile] = useState(null);
   const [uploadPercent, setUploadPercent] = useState(0);
+  const [confirmDelete, setConfirmDelete] = useState({ open: false, docId: null });
 
   const { currentUser } = useSelector((state) => state.user);
 
@@ -270,13 +343,18 @@ const ProjectDocuments = ({ project, setProject }) => {
   // Note: Assuming Owner, Admin, Editor can add/delete.
   const canManage = ["Owner", "Admin", "Editor"].includes(currentUserAccess);
 
-  const getFormatIcon = (format) => {
+  const getFormatIcon = (format, link = '') => {
+    const url = link.toLowerCase();
+    if (format === 'PDF' || url.includes('.pdf')) return <PictureAsPdf />;
+    if (format === 'PPT' || url.includes('.ppt') || url.includes('.pptx')) return <Slideshow />;
+    
     switch (format) {
-      case 'PDF': return <PictureAsPdf />;
-      case 'File Upload': return <InsertDriveFile />;
-      case 'Google Doc': return <Description />;
-      case 'PPT': return <InsertDriveFile />;
-      default: return <LinkIcon />;
+      case 'File Upload':
+        return <InsertDriveFile />;
+      case 'Google Doc':
+        return <Description />;
+      default:
+        return <LinkIcon />;
     }
   };
 
@@ -299,32 +377,38 @@ const ProjectDocuments = ({ project, setProject }) => {
 
     setLoading(true);
 
-    if (formData.format === 'File Upload' && file) {
-      const fileName = new Date().getTime() + "-" + file.name;
-      const storageRef = ref(storage, fileName);
+        if (formData.format === 'File Upload' && file) {
+            try {
+                const fileName = file.name.toLowerCase();
+                let detectedFormat = 'File Upload';
+                if (fileName.endsWith('.pdf')) detectedFormat = 'PDF';
+                else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) detectedFormat = 'PPT';
 
-      try {
-        setUploadPercent(50); // Just a generic progress indicator for now
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
+                const data = new FormData();
+                data.append("file", file);
+                
+                const token = localStorage.getItem("token");
+                const uploadRes = await uploadFile(data, token);
+                
+                setUploadPercent(100);
+                const downloadURL = uploadRes.data.secure_url;
 
-        const documentData = { ...formData, link: downloadURL };
-        const token = localStorage.getItem("token");
-        const res = await addProjectDocument(project._id, documentData, token);
+                const documentData = { ...formData, format: detectedFormat, link: downloadURL };
+                const res = await addProjectDocument(project._id, documentData, token);
 
-        setProject(res.data.project);
-        dispatch(openSnackbar({ message: "Document added successfully!", type: "success" }));
-        setOpenModal(false);
-        setFormData({ name: '', format: 'Link', link: '' });
-        setFile(null);
-        setUploadPercent(0);
-      } catch (error) {
-        console.error("Firebase Details:", error);
-        dispatch(openSnackbar({ message: 'Upload Failed: ' + (error.message || error.code || 'Unknown Error'), type: "error" }));
-      } finally {
-        setLoading(false);
-      }
-    } else {
+                setProject(res.data.project);
+                dispatch(openSnackbar({ message: "Document added successfully!", type: "success" }));
+                setOpenModal(false);
+                setFormData({ name: '', format: 'Link', link: '' });
+                setFile(null);
+                setUploadPercent(0);
+            } catch (error) {
+                console.error("Cloudinary Upload Details:", error);
+                dispatch(openSnackbar({ message: 'Upload Failed: ' + (error.response?.data?.message || error.message || 'Unknown Error'), type: "error" }));
+            } finally {
+                setLoading(false);
+            }
+        } else {
       try {
         const token = localStorage.getItem("token");
         const res = await addProjectDocument(project._id, formData, token);
@@ -343,10 +427,13 @@ const ProjectDocuments = ({ project, setProject }) => {
     }
   };
 
-  const handleDelete = async (e, docId) => {
-    e.preventDefault(); // Prevent navigating to the link
-    if (!window.confirm("Are you sure you want to remove this document link?")) return;
+  const handleDelete = (e, docId) => {
+    e.preventDefault();
+    setConfirmDelete({ open: true, docId });
+  };
 
+  const executeDelete = async () => {
+    const { docId } = confirmDelete;
     try {
       const token = localStorage.getItem("token");
       const res = await deleteProjectDocument(project._id, docId, token);
@@ -357,6 +444,8 @@ const ProjectDocuments = ({ project, setProject }) => {
         message: err.response?.data?.message || err.message,
         type: "error"
       }));
+    } finally {
+      setConfirmDelete({ open: false, docId: null });
     }
   };
 
@@ -385,13 +474,21 @@ const ProjectDocuments = ({ project, setProject }) => {
             <DocCard key={doc._id} href={doc.link} target="_blank" rel="noopener noreferrer">
               <DocHeader>
                 <IconWrapper format={doc.format}>
-                  {getFormatIcon(doc.format)}
+                  {getFormatIcon(doc.format, doc.link)}
                 </IconWrapper>
                 <DocInfo>
                   <DocName>{doc.name}</DocName>
                   <DocDate>{new Date(doc.dateAdded).toLocaleDateString()}</DocDate>
                 </DocInfo>
               </DocHeader>
+
+              {/* Preview based on format or link extension */}
+              {(doc.format === 'PDF' || doc.link.toLowerCase().includes('.pdf')) && (
+                <iframe src={doc.link} width="100%" height="200px" style={{ border: 'none', marginTop: '8px' }} />
+              )}
+              {(doc.format === 'PPT' || doc.link.toLowerCase().includes('.ppt') || doc.link.toLowerCase().includes('.pptx')) && (
+                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(doc.link)}`} width="100%" height="200px" style={{ border: 'none', marginTop: '8px' }} />
+              )}
 
               <div style={{ fontSize: '12px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <LinkIcon sx={{ fontSize: 14 }} /> {doc.format}
@@ -479,6 +576,25 @@ const ProjectDocuments = ({ project, setProject }) => {
           </form>
         </ModalContainer>
       </Modal>
+      {/* Delete Confirmation Dialog */}
+      {confirmDelete.open && (
+        <Backdrop onClick={() => setConfirmDelete({ open: false, docId: null })}>
+          <Dialog onClick={(e) => e.stopPropagation()}>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogText>
+              Are you sure you want to remove this document? This action cannot be undone.
+            </DialogText>
+            <DialogActions>
+              <CancelBtn onClick={() => setConfirmDelete({ open: false, docId: null })}>
+                Cancel
+              </CancelBtn>
+              <DeleteConfirmBtn onClick={executeDelete}>
+                Delete Document
+              </DeleteConfirmBtn>
+            </DialogActions>
+          </Dialog>
+        </Backdrop>
+      )}
     </Container>
   );
 };

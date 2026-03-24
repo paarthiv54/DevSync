@@ -13,6 +13,7 @@ import organizationRoutes from './routes/organization.js'; // Added
 import roleRoutes from './routes/role.js';
 import zoomRoutes from './routes/zoom.js';
 import aiRoutes from './routes/ai.js';
+import uploadRoutes from './routes/upload.js';
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 import morgan from 'morgan';
@@ -103,6 +104,7 @@ app.use("/api/organization", organizationRoutes); // Added
 app.use("/api/roles", roleRoutes);
 app.use("/api/zoom", zoomRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.use((err, req, res, next) => {
     fs.appendFileSync('error.log', new Date().toISOString() + ' - ' + (err.stack || err.message || err.toString()) + '\n');
