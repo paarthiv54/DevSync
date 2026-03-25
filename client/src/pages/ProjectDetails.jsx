@@ -20,6 +20,7 @@ import {
   GitHub,
   VideoCall,
   VideoCameraFront,
+  Assignment,
 } from "@mui/icons-material";
 import { CircularProgress, IconButton, Avatar, AvatarGroup, Tooltip, TextField, Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,6 +43,7 @@ import GitHubFeed from "../components/GitHubFeed";
 import { tagColors } from "../data/data";
 import ProjectDocuments from "../components/ProjectDocuments";
 import ProjectAnalytics from "../components/ProjectAnalytics";
+import { GalaxyButton, Skeleton } from "../components/CreativeComponents";
 import { io } from "socket.io-client";
 
 // --- Animations ---
@@ -245,6 +247,55 @@ const Widget = styled.div`
   border-radius: 16px;
   padding: 20px;
   border: 1px solid ${({ theme }) => theme.soft};
+`;
+
+const EmptyBoardContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 40px;
+  background: ${({ theme }) => theme.bgLighter + "50"};
+  border: 1px dashed ${({ theme }) => theme.soft};
+  border-radius: 20px;
+  grid-column: span 3;
+  animation: ${fadeInUp} 0.6s ease-out;
+
+  @media (max-width: 900px) {
+    grid-column: span 1;
+  }
+`;
+
+const EmptyIconWrapper = styled.div`
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: ${({ theme }) => theme.primary + "15"};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: ${({ theme }) => theme.primary};
+  
+  svg {
+    font-size: 40px;
+  }
+`;
+
+const EmptyTitle = styled.h3`
+  font-size: 22px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text};
+  margin: 0 0 10px;
+`;
+
+const EmptySubtitle = styled.p`
+  font-size: 15px;
+  color: ${({ theme }) => theme.textSoft};
+  max-width: 400px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
 `;
 
 const WidgetHeader = styled.div`
@@ -485,8 +536,60 @@ const ProjectDetails = () => {
 
   if (loading) {
     return (
-      <Container style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <CircularProgress />
+      <Container>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+          {/* Header Skeleton */}
+          <div>
+            <Skeleton height="40px" width="300px" style={{ marginBottom: '12px' }} />
+            <Skeleton height="20px" width="600px" style={{ marginBottom: '20px' }} />
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <Skeleton height="32px" width="100px" radius="20px" />
+              <Skeleton height="32px" width="100px" radius="20px" />
+            </div>
+          </div>
+          
+          {/* Content Skeleton */}
+          <MainContent>
+            <KanbanBoard>
+              {[1, 2, 3].map(i => (
+                <KanbanColumn key={i}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                    <Skeleton height="24px" width="120px" />
+                    <Skeleton height="24px" width="24px" radius="50%" />
+                  </div>
+                  {[1, 2, 3].map(j => (
+                    <div key={j} style={{ background: theme.bgLighter, borderRadius: '16px', padding: '16px', border: `1px solid ${theme.soft}` }}>
+                      <Skeleton height="18px" width="80%" style={{ marginBottom: '12px' }} />
+                      <Skeleton height="14px" width="100%" style={{ marginBottom: '8px' }} />
+                      <Skeleton height="14px" width="60%" style={{ marginBottom: '20px' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Skeleton height="24px" width="60px" radius="12px" />
+                        <Skeleton height="24px" width="24px" radius="50%" />
+                      </div>
+                    </div>
+                  ))}
+                </KanbanColumn>
+              ))}
+            </KanbanBoard>
+            <Sidebar>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {[1, 2].map(i => (
+                        <div key={i} style={{ background: theme.bgLighter, borderRadius: '16px', padding: '20px', border: `1px solid ${theme.soft}` }}>
+                            <Skeleton height="22px" width="100px" style={{ marginBottom: '16px' }} />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {[1, 2, 3].map(j => (
+                                    <div key={j} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                        <Skeleton height="32px" width="32px" radius="50%" />
+                                        <Skeleton height="16px" width="120px" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Sidebar>
+          </MainContent>
+        </div>
       </Container>
     );
   }
@@ -612,34 +715,51 @@ const ProjectDetails = () => {
       ) : (
         <MainContent>
           <KanbanBoard>
-            {stages.map((stage, index) => {
-              if (!stage) return null;
-              return (
-                <KanbanColumnDrop
-                  key={index}
-                  status={stage.name}
-                  title={stage.name}
-                  color={stage.color}
-                  icon={<DonutLarge sx={{ color: stage.color }} />}
-                  onAdd={index === 0 ? () => setShowAddWork(!showAddWork) : undefined}
-                  count={works.filter(w => w.status === stage.name).length}
-                  moveWork={moveWork}
-                >
-                  {/* Create New Work Form / Button - Only for first column */}
-                  {index === 0 && showAddWork && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <AddWork ProjectMembers={members} ProjectId={id} setCreated={setCreated} closeForm={() => setShowAddWork(false)} />
-                    </div>
-                  )}
+            {works.length === 0 && !showAddWork ? (
+              <EmptyBoardContainer>
+                  <EmptyIconWrapper>
+                    <Assignment sx={{ fontSize: 40 }} />
+                  </EmptyIconWrapper>
+                  <EmptyTitle>No tasks found in this project</EmptyTitle>
+                  <EmptySubtitle>
+                    Get the ball rolling! Create your first task to start tracking progress with your team.
+                  </EmptySubtitle>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <GalaxyButton onClick={() => setShowAddWork(true)}>
+                      <Add /> Create Your First Task
+                    </GalaxyButton>
+                  </div>
+              </EmptyBoardContainer>
+            ) : (
+              stages.map((stage, index) => {
+                if (!stage) return null;
+                return (
+                  <KanbanColumnDrop
+                    key={index}
+                    status={stage.name}
+                    title={stage.name}
+                    color={stage.color}
+                    icon={<DonutLarge sx={{ color: stage.color }} />}
+                    onAdd={index === 0 ? () => setShowAddWork(!showAddWork) : undefined}
+                    count={works.filter(w => w.status === stage.name).length}
+                    moveWork={moveWork}
+                  >
+                    {/* Create New Work Form / Button - Only for first column */}
+                    {index === 0 && showAddWork && (
+                      <div style={{ marginBottom: '10px' }}>
+                        <AddWork ProjectMembers={members} ProjectId={id} setCreated={setCreated} closeForm={() => setShowAddWork(false)} />
+                      </div>
+                    )}
 
-                  {works.filter(w => w.status === stage.name).map(work => (
-                    <div key={work._id} onClick={() => openWorkDetails(work)} style={{ marginBottom: '16px' }}>
-                      <WorkCards status={stage.name} stageColor={stage.color} work={work} deleteWorkLocal={deleteWorkLocal} />
-                    </div>
-                  ))}
-                </KanbanColumnDrop>
-              )
-            })}
+                    {works.filter(w => w.status === stage.name).map(work => (
+                      <div key={work._id} onClick={() => openWorkDetails(work)} style={{ marginBottom: '16px' }}>
+                        <WorkCards status={stage.name} stageColor={stage.color} work={work} deleteWorkLocal={deleteWorkLocal} />
+                      </div>
+                    ))}
+                  </KanbanColumnDrop>
+                )
+              })
+            )}
           </KanbanBoard>
 
           <Sidebar>

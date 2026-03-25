@@ -7,7 +7,7 @@ import { Add, Delete, Edit, PersonAdd, DeleteOutline, OpenInNew, Announcement, N
 import { data, tools, members, ideas, tagColors } from "../data/data";
 import Card from "../components/Card";
 import MemberCard from "../components/MemberCard";
-import { CircularProgress, IconButton, Avatar, LinearProgress } from "@mui/material";
+import { CircularProgress, IconButton, Avatar, LinearProgress, Tooltip } from "@mui/material";
 import ToolsCard from "../components/ToolsCard";
 import IdeaCard from "../components/IdeaCard";
 import axios from "axios";
@@ -580,7 +580,20 @@ const Teams = () => {
                     <StatBar key={m.id}>
                       <span style={{ fontSize: '16px', minWidth: '24px' }}>{idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `${idx + 1}.`}</span>
                       <Avatar src={m.img} sx={{ width: 28, height: 28, fontSize: 13 }}>{m.name?.[0]}</Avatar>
-                      <StatLabel style={{ minWidth: '80px', flex: 1 }}>{m.name}</StatLabel>
+                      <div style={{ minWidth: '80px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <StatLabel>{m.name}</StatLabel>
+                        {m.badges && m.badges.length > 0 && (
+                          <div style={{ display: 'flex', gap: '4px', marginTop: '2px', flexWrap: 'wrap' }}>
+                            {m.badges.map(b => (
+                              <Tooltip key={b.name} title={b.desc}>
+                                <div style={{ fontSize: '10px', padding: '2px 4px', borderRadius: '4px', background: `${b.color}20`, color: b.color, display: 'flex', alignItems: 'center', gap: '2px', cursor: 'help' }}>
+                                  <span>{b.icon}</span> <span style={{ fontSize: '9px', fontWeight: 600 }}>{b.name}</span>
+                                </div>
+                              </Tooltip>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <div style={{ flex: 2 }}>
                         <LinearProgress
                           variant="determinate"

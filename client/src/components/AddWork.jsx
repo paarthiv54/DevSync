@@ -10,6 +10,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
 import AITaskAssistant from "./AITaskAssistant";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const Container = styled.div`
   padding: 12px 14px;
@@ -153,6 +155,37 @@ const OutlinedBox = styled.div`
   align-items: center;
   font-weight: 500;
   padding: 0px 10px;
+`;
+
+const QuillWrapper = styled.div`
+  width: 100%;
+  margin: 6px 0;
+  .quill {
+    background: transparent;
+    border-radius: 8px;
+    border: 1px solid ${({ theme }) => theme.soft2};
+    overflow: hidden;
+  }
+  .ql-toolbar {
+    border: none !important;
+    border-bottom: 1px solid ${({ theme }) => theme.soft2} !important;
+    background: ${({ theme }) => theme.soft + "40"};
+    padding: 4px 8px !important;
+  }
+  .ql-container {
+    border: none !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+    min-height: 120px;
+  }
+  .ql-editor {
+    color: ${({ theme }) => theme.textSoft};
+    padding: 10px;
+    &.ql-blank::before {
+      color: ${({ theme }) => theme.soft2};
+      font-style: normal;
+    }
+  }
 `;
 const FlexDisplay = styled.div`
   display: flex;
@@ -407,15 +440,21 @@ const AddWork = ({ ProjectMembers, ProjectId, setCreated, closeForm }) => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </OutlinedBox>
-          <OutlinedBox>
-            <TextArea
+          <QuillWrapper>
+            <ReactQuill
+              theme="snow"
               placeholder="What is this task about?"
-              name="desc"
-              rows={4}
               value={desc}
-              onChange={(e) => setDesc(e.target.value)}
+              onChange={setDesc}
+              modules={{
+                toolbar: [
+                  ['bold', 'italic', 'underline'],
+                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  ['clean']
+                ],
+              }}
             />
-          </OutlinedBox>
+          </QuillWrapper>
           <FlexDisplay>
             <OutlinedBox style={{ width: "100%", flexDirection: "column", alignItems: "flex-start", padding: "8px 12px", gap: "4px" }}>
               <div style={{ fontSize: "11px", fontWeight: "600", color: "inherit" }}>Start Date</div>

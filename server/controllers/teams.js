@@ -620,13 +620,34 @@ export const getTeamAnalytics = async (req, res, next) => {
         const tasks = await Tasks.find({ projectId: { $in: projectIds } });
 
         // Per-member stats
-        const memberStats = team.members.map(m => {
+        let maxCompleted = 0;
+        const memberStatsRaw = team.members.map(m => {
             const memberId = m.id._id?.toString() || m.id.toString();
             const memberName = m.id.name || "Unknown";
             const memberImg = m.id.img || "";
             const assigned = tasks.filter(t => t.members?.some(tm => tm.toString() === memberId));
             const completed = assigned.filter(t => t.status === "Completed" || t.status === "Done");
-            return { id: memberId, name: memberName, img: memberImg, assigned: assigned.length, completed: completed.length };
+            const bugTasksCompleted = completed.filter(t => t.task && (t.task.toLowerCase().includes("bug") || t.task.toLowerCase().includes("fix") || t.task.toLowerCase().includes("issue"))).length;
+            
+            if (completed.length > maxCompleted) maxCompleted = completed.length;
+            
+            return { id: memberId, name: memberName, img: memberImg, assigned: assigned.length, completed: completed.length, bugTasksCompleted };
+        });
+
+        const memberStats = memberStatsRaw.map(m => {
+            const badges = [];
+            if (m.completed > 0 && m.completed === maxCompleted) {
+                badges.push({ name: "Sprint Champion", icon: "🏆", color: "#FF9800", desc: "Most tasks completed" });
+            }
+            if (m.bugTasksCompleted >= 1) {
+                badges.push({ name: "Bug Squasher", icon: "🐛", color: "#E91E63", desc: "Resolved bug tasks" });
+            }
+            if (m.completed >= 5) {
+                badges.push({ name: "Task Master", icon: "⭐", color: "#4CAF50", desc: "Completed 5+ tasks" });
+            } else if (m.completed >= 1) {
+                badges.push({ name: "Active Contributor", icon: "🚀", color: "#2196F3", desc: "Active on tasks" });
+            }
+            return { ...m, badges };
         });
 
         const totalTasks = tasks.length;

@@ -10,8 +10,10 @@ import { Avatar } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { tagColors } from "../data/data";
 import TaskCard from "./TaskCard";
-import { addTask } from "../api/index";
 import { openSnackbar } from "../redux/snackbarSlice";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const Container = styled.div`
   width: 100%;
@@ -72,12 +74,10 @@ const Desc = styled.div`
   color: ${({ theme }) => theme.soft2};
   flex: 7;
   line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;m
-  -webkit-line-clamp: 2; /* number of lines to show */
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  margin-top: 8px;
+  
+  p { margin: 0; }
+  ul, ol { padding-left: 20px; margin: 6px 0; }
 `;
 
 const Tags = styled.div`
@@ -343,7 +343,9 @@ const WorkDetails = ({ setOpenWork, work, reloadWorks }) => {
               </IconButton>
             </FlexDisplay>
             <Desc>
-              {work.desc}
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {work.desc}
+              </ReactMarkdown>
             </Desc>
             <Members
               style={{

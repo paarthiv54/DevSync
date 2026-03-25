@@ -3,9 +3,11 @@ import styled from "styled-components";
 import { Avatar, Menu, MenuItem, IconButton, Tooltip } from "@mui/material";
 import { PlayArrow, Pause, Timer } from "@mui/icons-material";
 import UserAvatar from "./UserAvatar";
-import { updateTaskStatus, deleteTask, startTimer, stopTimer } from "../api/index";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 
 const Card = styled.div`
@@ -82,12 +84,16 @@ const Task = styled.div`
 `;
 
 const TaskTitle = styled.div`
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   margin-bottom: 4px;
+  
+  p { margin: 0; }
+  ul, ol { padding-left: 20px; margin: 4px 0; }
+  code {
+    background: ${({ theme }) => theme.bg};
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 90%;
+  }
 `;
 
 const ImpactRow = styled.div`
@@ -337,7 +343,11 @@ const TaskCard = ({ item, index, members, updateTaskLocal, deleteTaskLocal }) =>
     <Card completed={item.status}>
       <No completed={item.status}>{index + 1}.</No>
       <Task completed={item.status}>
-        <TaskTitle>{item.task}</TaskTitle>
+        <TaskTitle>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {item.task}
+          </ReactMarkdown>
+        </TaskTitle>
         {(item.impact_risk || item.impact_modules?.length > 0) && (
           <ImpactRow>
             {item.impact_risk && <RiskBadge risk={item.impact_risk}>{item.impact_risk} Risk</RiskBadge>}

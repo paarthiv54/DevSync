@@ -7,7 +7,7 @@ import { Avatar, IconButton } from "@mui/material";
 import { getProjects, userTasks } from "../api";
 import { openSnackbar } from "../redux/snackbarSlice";
 import { format } from "timeago.js";
-import { GalaxyButton, PremiumLoader, StatusBadge, TagChip } from "../components/CreativeComponents";
+import { GalaxyButton, PremiumLoader, StatusBadge, TagChip, Skeleton } from "../components/CreativeComponents";
 
 // ─── Animations ────────────────────────────────────────────────────────────────
 
@@ -299,12 +299,25 @@ const TimeStamp = styled.span`
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 80px 20px;
+  padding: 80px 40px;
   color: ${({ theme }) => theme.textSoft};
+  background: ${({ theme }) => theme.bgLighter + "40"};
+  border: 1.5px dashed ${({ theme }) => theme.border};
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: ${fadeInUp} 0.6s ease-out;
 
-  .emoji { font-size: 56px; margin-bottom: 20px; display: block; }
-  h3 { font-size: 20px; font-weight: 700; color: ${({ theme }) => theme.text}; margin-bottom: 8px; }
-  p { font-size: 15px; margin: 0 0 24px; }
+  .emoji { 
+    font-size: 64px; 
+    margin-bottom: 24px; 
+    display: block;
+    filter: drop-shadow(0 10px 20px rgba(124, 77, 255, 0.3));
+  }
+  h3 { font-size: 22px; font-weight: 700; color: ${({ theme }) => theme.text}; margin: 0 0 10px; }
+  p { font-size: 15px; margin: 0 0 32px; max-width: 440px; line-height: 1.6; }
 `;
 
 // ─── Stats Bar ─────────────────────────────────────────────────────────────────
@@ -418,7 +431,16 @@ const ProjectsNew = ({ setNewProject }) => {
       </PageHeader>
 
       {/* Stats Bar */}
-      {!loading && (
+      {loading ? (
+        <StatsBar style={{ gap: '40px' }}>
+          {[1, 2, 3].map(i => (
+            <StatItem key={i}>
+              <Skeleton height="14px" width="10px" radius="50%" />
+              <Skeleton height="16px" width="80px" />
+            </StatItem>
+          ))}
+        </StatsBar>
+      ) : (
         <StatsBar>
           <StatItem>
             <StatDot color="#7C4DFF" />
@@ -478,9 +500,27 @@ const ProjectsNew = ({ setNewProject }) => {
 
       {/* Content */}
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}>
-          <PremiumLoader />
-        </div>
+        <ProjectsGrid $listView={listView}>
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} style={{ background: theme.bgLighter, borderRadius: '20px', padding: '22px', border: `1px solid ${theme.border}` }}>
+              <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '15px' }}>
+                <Skeleton height="44px" width="44px" radius="12px" />
+                <div style={{ flex: 1 }}>
+                  <Skeleton height="18px" width="60%" style={{ marginBottom: '8px' }} />
+                  <Skeleton height="12px" width="40%" />
+                </div>
+              </div>
+              <Skeleton height="14px" width="100%" style={{ marginBottom: '8px' }} />
+              <Skeleton height="14px" width="100%" style={{ marginBottom: '20px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${theme.border}`, paddingTop: '12px' }}>
+                <div style={{ display: 'flex', gap: '-8px' }}>
+                  {[1, 2, 3].map(j => <Skeleton key={j} height="26px" width="26px" radius="50%" style={{ marginLeft: j > 1 ? '-8px' : '0' }} />)}
+                </div>
+                <Skeleton height="12px" width="60px" />
+              </div>
+            </div>
+          ))}
+        </ProjectsGrid>
       ) : filteredData.length === 0 ? (
         <EmptyState>
           <span className="emoji">{search || filter !== "All" ? "🔍" : "📁"}</span>

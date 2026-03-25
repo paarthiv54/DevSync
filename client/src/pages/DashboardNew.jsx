@@ -7,7 +7,7 @@ import { Avatar } from "@mui/material";
 import { getProjects, userTasks } from "../api";
 import { openSnackbar } from "../redux/snackbarSlice";
 import { format } from "timeago.js";
-import { MagicCard, MagicCardContent, GalaxyButton, PremiumLoader, GlassCard, TagChip, StatusBadge } from "../components/CreativeComponents";
+import { MagicCard, MagicCardContent, GalaxyButton, PremiumLoader, GlassCard, TagChip, StatusBadge, Skeleton } from "../components/CreativeComponents";
 import WorkloadDashboard from "../components/WorkloadDashboard";
 
 // ─── Animations ────────────────────────────────────────────────────────────────
@@ -392,12 +392,25 @@ const TimeLabel = styled.span`
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px;
   color: ${({ theme }) => theme.textSoft};
+  background: ${({ theme }) => theme.bgLighter + "40"};
+  border: 1.5px dashed ${({ theme }) => theme.border};
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: ${fadeInUp} 0.8s ease-out;
 
-  .emoji { font-size: 48px; margin-bottom: 16px; display: block; }
-  h3 { font-size: 18px; font-weight: 700; color: ${({ theme }) => theme.text}; margin-bottom: 8px; }
-  p { font-size: 14px; color: ${({ theme }) => theme.textSoft}; }
+  .emoji { 
+    font-size: 64px; 
+    margin-bottom: 24px; 
+    display: block;
+    filter: drop-shadow(0 10px 20px rgba(124, 77, 255, 0.3));
+  }
+  h3 { font-size: 22px; font-weight: 700; color: ${({ theme }) => theme.text}; margin: 0 0 12px; }
+  p { font-size: 15px; color: ${({ theme }) => theme.textSoft}; margin: 0 0 32px; max-width: 400px; margin-inline: auto; line-height: 1.6; }
 `;
 
 // ─── Component ─────────────────────────────────────────────────────────────────
@@ -508,23 +521,44 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
         <HeroImage>👨‍💻</HeroImage>
       </HeroBanner>
 
-      {/* Stats */}
-      <StatsGrid>
-        {stats.map((stat, i) => (
-          <StatCard key={i} delay={stat.delay} accent={stat.accent}>
-            <StatTop>
-              <StatLabel>{stat.label}</StatLabel>
-              <StatIcon bg={stat.bg} shadow={stat.shadow}>
-                {stat.icon}
-              </StatIcon>
-            </StatTop>
-            <StatValue>{loading ? "—" : stat.value}</StatValue>
-            <StatNote>{stat.note}</StatNote>
-          </StatCard>
-        ))}
-      </StatsGrid>
-
-      {/* Workload */}
+      {loading ? (
+        <>
+          <StatsGrid>
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} style={{ background: theme.bgLighter, borderRadius: '20px', padding: '24px', border: `1px solid ${theme.border}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <Skeleton height="16px" width="100px" />
+                  <Skeleton height="46px" width="46px" radius="14px" />
+                </div>
+                <Skeleton height="40px" width="60px" style={{ marginBottom: '12px' }} />
+                <Skeleton height="16px" width="120px" />
+              </div>
+            ))}
+          </StatsGrid>
+          <div style={{ background: theme.bgLighter, borderRadius: '24px', height: '300px', marginBottom: '32px', border: `1px solid ${theme.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             <Skeleton height="100%" width="100%" radius="24px" />
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Stats */}
+          <StatsGrid>
+            {stats.map((stat, i) => (
+              <StatCard key={i} delay={stat.delay} accent={stat.accent}>
+                <StatTop>
+                  <StatLabel>{stat.label}</StatLabel>
+                  <StatIcon bg={stat.bg} shadow={stat.shadow}>
+                    {stat.icon}
+                  </StatIcon>
+                </StatTop>
+                <StatValue>{stat.value}</StatValue>
+                <StatNote>{stat.note}</StatNote>
+              </StatCard>
+            ))}
+          </StatsGrid>
+        </>
+      )}
+  {/* Workload */}
       <WorkloadDashboard />
 
       {/* Recent Projects */}
@@ -539,14 +573,35 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
       </SectionHeader>
 
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", padding: "60px" }}>
-          <PremiumLoader />
-        </div>
+        <ProjectsGrid>
+          {[1, 2, 3].map(i => (
+            <div key={i} style={{ background: theme.bgLighter, borderRadius: '20px', padding: '22px', border: `1px solid ${theme.border}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <Skeleton height="24px" width="80px" radius="20px" />
+                <Skeleton height="24px" width="60px" radius="20px" />
+              </div>
+              <Skeleton height="22px" width="80%" style={{ marginBottom: '12px' }} />
+              <Skeleton height="16px" width="100%" style={{ marginBottom: '8px' }} />
+              <Skeleton height="16px" width="60%" style={{ marginBottom: '20px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto' }}>
+                <div style={{ display: 'flex', gap: '-8px' }}>
+                  {[1, 2, 3].map(j => <Skeleton key={j} height="28px" width="28px" radius="50%" style={{ marginLeft: j > 1 ? '-8px' : '0' }} />)}
+                </div>
+                <Skeleton height="16px" width="80px" />
+              </div>
+            </div>
+          ))}
+        </ProjectsGrid>
       ) : data.projects.length === 0 ? (
         <EmptyState>
           <span className="emoji">🚀</span>
           <h3>No projects yet</h3>
-          <p>Create your first project to get started</p>
+          <p>It looks like you haven't started any projects. Create your first workspace to begin collaborating with your team.</p>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <GalaxyButton onClick={() => setNewProject(true)}>
+              <Add /> Create Project
+            </GalaxyButton>
+          </div>
         </EmptyState>
       ) : (
         <ProjectsGrid>

@@ -5,7 +5,7 @@ import {
   CheckCircleOutline, DonutLarge, CalendarToday, Assignment,
   AccessTime, TrendingUp, MoreHoriz, WorkOutline, TaskAlt
 } from "@mui/icons-material";
-import { GalaxyButton, PremiumLoader, StatusBadge, GlassCard } from "../components/CreativeComponents";
+import { GalaxyButton, PremiumLoader, StatusBadge, GlassCard, Skeleton } from "../components/CreativeComponents";
 import { useDispatch, useSelector } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
 import { userWorks, userTasks } from "../api";
@@ -277,8 +277,26 @@ const EmptyColumn = styled.div`
   padding: 40px 20px;
   color: ${({ theme }) => theme.textSoft};
   font-size: 14px;
+  background: ${({ theme }) => theme.bgLighter + "30"};
+  border: 1px dashed ${({ theme }) => theme.border};
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 
-  .icon { font-size: 36px; margin-bottom: 8px; display: block; }
+  .icon {
+    font-size: 40px;
+    margin-bottom: 4px;
+    display: block;
+    opacity: 0.8;
+  }
+  h5 {
+    font-size: 15px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.text};
+    margin: 0;
+  }
 `;
 
 // ─── Tasks Table ──────────────────────────────────────────────────────────────
@@ -365,9 +383,18 @@ const OverdueDate = styled(DateCell)`
 
 const EmptyRow = styled.div`
   text-align: center;
-  padding: 48px;
+  padding: 60px 48px;
   color: ${({ theme }) => theme.textSoft};
   font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: ${({ theme }) => theme.bgLighter};
+
+  .icon { font-size: 48px; display: block; }
+  h4 { font-size: 18px; font-weight: 700; color: ${({ theme }) => theme.text}; margin: 0; }
+  p { margin: 0; max-width: 300px; line-height: 1.5; }
 `;
 
 // ─── Component ─────────────────────────────────────────────────────────────────
@@ -428,8 +455,58 @@ const WorksNew = () => {
       </PageHeader>
 
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", padding: "80px" }}>
-          <PremiumLoader />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <StatsGrid>
+            {[1, 2, 3].map(i => (
+              <div key={i} style={{ background: theme.bgLighter, borderRadius: '20px', padding: '22px', border: `1px solid ${theme.border}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                   <div>
+                     <Skeleton height="12px" width="80px" style={{ marginBottom: '8px' }} />
+                     <Skeleton height="36px" width="50px" />
+                   </div>
+                   <Skeleton height="44px" width="44px" radius="12px" />
+                </div>
+                <Skeleton height="5px" width="100%" radius="10px" />
+              </div>
+            ))}
+          </StatsGrid>
+          
+          <WorksLayout>
+            {[1, 2].map(col => (
+               <WorkColumn key={col}>
+                 <Skeleton height="24px" width="140px" style={{ marginBottom: '18px' }} />
+                 {[1, 2].map(i => (
+                   <div key={i} style={{ background: theme.bgLighter, borderRadius: '18px', padding: '20px', border: `1px solid ${theme.border}` }}>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                        <Skeleton height="18px" width="60%" />
+                        <Skeleton height="20px" width="50px" radius="20px" />
+                     </div>
+                     <Skeleton height="12px" width="100px" style={{ marginBottom: '15px' }} />
+                     <Skeleton height="5px" width="100%" style={{ marginBottom: '15px' }} />
+                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Skeleton height="26px" width="60px" radius="50%" />
+                        <Skeleton height="24px" width="60px" radius="20px" />
+                     </div>
+                   </div>
+                 ))}
+               </WorkColumn>
+            ))}
+          </WorksLayout>
+
+          <div style={{ marginBottom: '16px' }}>
+            <Skeleton height="24px" width="160px" />
+          </div>
+          <div style={{ background: theme.bgLighter, borderRadius: '20px', border: `1px solid ${theme.border}`, overflow: 'hidden' }}>
+             {[1, 2, 3, 4, 5].map(i => (
+               <div key={i} style={{ display: 'flex', padding: '16px 24px', borderBottom: `1px solid ${theme.border}`, gap: '20px' }}>
+                  <Skeleton height="20px" width="24px" />
+                  <Skeleton height="20px" width="40%" />
+                  <Skeleton height="20px" width="100px" />
+                  <Skeleton height="20px" width="100px" />
+                  <Skeleton height="20px" width="80px" radius="10px" />
+               </div>
+             ))}
+          </div>
         </div>
       ) : (
         <>
@@ -503,8 +580,9 @@ const WorksNew = () => {
 
               {pendingWorks.length === 0 ? (
                 <EmptyColumn>
-                  <span className="icon">✨</span>
-                  No active works
+                  <span className="icon">🚀</span>
+                  <h5>All caught up!</h5>
+                  <p style={{ fontSize: '13px', margin: 0 }}>No active works in progress at the moment.</p>
                 </EmptyColumn>
               ) : (
                 pendingWorks.map((work) => (
@@ -567,7 +645,8 @@ const WorksNew = () => {
               {completedWorks.length === 0 ? (
                 <EmptyColumn>
                   <span className="icon">🏁</span>
-                  No completed works yet
+                  <h5>Ready to start?</h5>
+                  <p style={{ fontSize: '13px', margin: 0 }}>You haven't completed any works yet.</p>
                 </EmptyColumn>
               ) : (
                 completedWorks.map((work) => (
@@ -636,7 +715,11 @@ const WorksNew = () => {
             </TableHeader>
 
             {tasks.length === 0 ? (
-              <EmptyRow>No tasks assigned to you yet.</EmptyRow>
+              <EmptyRow>
+                <span className="icon">📝</span>
+                <h4>No tasks assigned</h4>
+                <p>Whenever you are assigned to a task, it will appear here in your dashboard.</p>
+              </EmptyRow>
             ) : (
               tasks.map((task, index) => (
                 <TableRow key={task._id}>

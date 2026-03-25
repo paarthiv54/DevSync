@@ -11,6 +11,9 @@ import axios from "axios";
 import Avatar from "@mui/material/Avatar";
 import { format } from 'timeago.js';
 import UserAvatar from "./UserAvatar";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const StatusBadge = styled.div`
   padding: 2px 8px;
@@ -94,12 +97,9 @@ const Desc = styled.div`
   color: ${({ theme }) => theme.soft2};
   margin-top: 8px;
   line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 5; /* number of lines to show */
-  line-clamp: 5;
-  -webkit-box-orient: vertical;
+  
+  p { margin: 0; }
+  ul, ol { padding-left: 20px; margin: 4px 0; }
 `;
 
 
@@ -194,17 +194,19 @@ const Card = ({ tagColor, item, index, status }) => {
             <Title>{item.title}</Title>
             <StatusBadge status={item.status}>{item.status}</StatusBadge>
           </Top>
-          <Desc>{item.desc}</Desc>
+          <Desc>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              {item.desc}
+            </ReactMarkdown>
+          </Desc>
           <Tags>
-            {item.tags.map((tag) => (
-              <Tag
-                tagColor={
-                  tagColors[Math.floor(Math.random() * tagColors.length)]
-                }
-              >
+            {item.tags.map((tag) => {
+              const color = tagColors[Math.floor(Math.random() * tagColors.length)];
+              return (
+              <Tag key={tag} tagColor={color}>
                 {tag}
               </Tag>
-            ))}
+            )})}
           </Tags>
           <Bottom>
             <Time>

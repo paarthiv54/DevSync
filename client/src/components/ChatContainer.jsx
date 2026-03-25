@@ -4,6 +4,11 @@ import React, { useRef, useEffect, useState } from 'react'
 import { getMessages, addMessage } from '../api'
 import { format } from "timeago.js";
 import styled from 'styled-components'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const Container = styled.div`
     display: flex;
@@ -100,8 +105,8 @@ const SendMessage = styled.div`
     min-height: 70px;
     border-top: 1px solid ${({ theme }) => theme.soft};
     display: flex;
-    align-items: center;
-    padding: 0 16px;
+    align-items: flex-end;
+    padding: 0 16px 12px 16px;
     gap: 10px;
     @media (max-width: 800px) {
         position: fixed;
@@ -111,7 +116,7 @@ const SendMessage = styled.div`
         right: 0;
         z-index: 100;
         gap: 6px;
-        padding: 0 2px;
+        padding: 0 2px 8px 2px;
     }
 `
 
@@ -141,15 +146,14 @@ const MessageBox = styled.div`
     padding: 16px 8px;
 `
 
-const Message = styled.input`
+const Message = styled.textarea`
     border: none;
     flex: 1;
-    height: 100%;
-    width: 100%;
     background-color: transparent;
     color: ${({ theme }) => theme.text};
     font-size: 16px;
     padding: 0 16px;
+    font-family: inherit;
     &:focus {
         outline: none;
     }
@@ -162,6 +166,53 @@ const SenderName = styled.span`
     margin: 0 0 2px 18px;
     font-weight: 500;
 `
+
+const QuillWrapper = styled.div`
+  flex: 1;
+  .quill {
+    background: ${({ theme }) => theme.bg};
+    border-radius: 12px;
+    border: none;
+    overflow: hidden;
+  }
+  .ql-toolbar {
+    display: none !important;
+  }
+  .ql-container {
+    border: none !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    min-height: 40px;
+  }
+  .ql-editor {
+    color: ${({ theme }) => theme.text};
+    line-height: 1.5;
+    padding: 8px 16px;
+    &.ql-blank::before {
+      color: ${({ theme }) => theme.textSoft};
+      font-style: normal;
+      left: 16px;
+    }
+  }
+`;
+
+const MarkdownContent = styled.div`
+  p { margin: 0; }
+  ul, ol { padding-left: 20px; margin: 4px 0; }
+  code {
+    background: rgba(0,0,0,0.1);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 90%;
+  }
+  pre {
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 4px 0;
+  }
+`;
 
 const ChatContainer = ({ showChat, setShowChat, currentChat, currentUser, socket }) => {
 
@@ -177,6 +228,14 @@ const ChatContainer = ({ showChat, setShowChat, currentChat, currentUser, socket
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const messagesEndRef = useRef(null)
+    const textareaRef = useRef(null);
+
+    React.useLayoutEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+    }, [newMessage]);
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -262,13 +321,21 @@ const ChatContainer = ({ showChat, setShowChat, currentChat, currentUser, socket
                             <div key={m._id}>
                                 {m.senderId === currentUser._id ?
                                     <>
-                                        <SentMessage key={m._id}>{m.text}</SentMessage>
+                                        <SentMessage key={m._id}>
+                                            <MarkdownContent>
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{m.text}</ReactMarkdown>
+                                            </MarkdownContent>
+                                        </SentMessage>
                                         <Time message="sent"><b>{format(m.createdAt)}</b><DoneAll /></Time>
                                     </>
                                     :
                                     <div style={{ display: 'flex', flexDirection: 'column', marginTop: '16px' }}>
                                         <SenderName>{getSender(m.senderId)?.name}</SenderName>
-                                        <RecievedMessage key={m._id} style={{ margin: '0 16px 0 16px' }}>{m.text}</RecievedMessage>
+                                        <RecievedMessage key={m._id} style={{ margin: '0 16px 0 16px' }}>
+                                            <MarkdownContent>
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{m.text}</ReactMarkdown>
+                                            </MarkdownContent>
+                                        </RecievedMessage>
                                         <Time message="recieved"><b>{format(m.createdAt)}</b></Time>
                                     </div>
                                 }
@@ -278,7 +345,15 @@ const ChatContainer = ({ showChat, setShowChat, currentChat, currentUser, socket
                     </Chat>
                     <SendMessage>
                         <MessageBox>
-                            <Message placeholder="Type a message" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleSend(e) }} />
+                            <QuillWrapper>
+                                <ReactQuill
+                                    theme="snow"
+                                    placeholder="Type a message... (Markdown supported)"
+                                    value={newMessage}
+                                    onChange={setNewMessage}
+                                    modules={{ toolbar: false }}
+                                />
+                            </QuillWrapper>
                         </MessageBox>
                         <IconButton style={{ color: 'inherit', marginBottom: '6px' }} onClick={handleSend}>
                             <Telegram sx={{ height: '30px', width: '30px' }} />

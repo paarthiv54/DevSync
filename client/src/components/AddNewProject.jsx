@@ -30,6 +30,8 @@ import {
 import { openSnackbar } from "../redux/snackbarSlice";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../redux/userSlice";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const Container = styled.div`
   width: 100%;
@@ -143,6 +145,36 @@ const TextInput = styled.input`
   outline: none;
   color: ${({ theme }) => theme.text};
   font-family: inherit;
+`;
+
+const QuillWrapper = styled.div`
+  margin: 6px 20px;
+  .quill {
+    background: transparent;
+    border-radius: 8px;
+    border: 1px solid ${({ theme }) => theme.soft2};
+    overflow: hidden;
+  }
+  .ql-toolbar {
+    border: none !important;
+    border-bottom: 1px solid ${({ theme }) => theme.soft2} !important;
+    background: ${({ theme }) => theme.soft + "40"};
+    padding: 4px 8px !important;
+  }
+  .ql-container {
+    border: none !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+    min-height: 150px;
+  }
+  .ql-editor {
+    color: ${({ theme }) => theme.text};
+    padding: 12px;
+    &.ql-blank::before {
+      color: ${({ theme }) => theme.soft2};
+      font-style: normal;
+    }
+  }
 `;
 
 const ToolsContainer = styled.div`
@@ -694,15 +726,21 @@ const AddNewProject = ({ setNewProject, teamId, teamProject }) => {
                       onChange={handleChange}
                     />
                   </OutlinedBox>
-                  <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px" }}>
-                    <Desc
-                      placeholder="Description (Required)* "
-                      name="desc"
-                      rows={5}
+                  <QuillWrapper>
+                    <ReactQuill
+                      theme="snow"
+                      placeholder="Description (Required)*"
                       value={inputs.desc}
-                      onChange={handleChange}
+                      onChange={(val) => setInputs(prev => ({ ...prev, desc: val }))}
+                      modules={{
+                        toolbar: [
+                          ['bold', 'italic', 'underline'],
+                          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                          ['link', 'clean']
+                        ],
+                      }}
                     />
-                  </OutlinedBox>
+                  </QuillWrapper>
                   <OutlinedBox style={{ marginTop: "6px", alignItems: "flex-start", padding: "12px 14px", overflow: "hidden" }}>
                     <Desc
                       placeholder="Tags: seperate by , eg- Mongo Db , React JS .."

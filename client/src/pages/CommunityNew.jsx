@@ -5,11 +5,16 @@ import {
   Favorite, FavoriteBorder, ChatBubbleOutline, Share, MoreHoriz, DeleteOutline, Edit,
   Send, TrendingUp, People, Public, AutoAwesome, Image, Link
 } from "@mui/icons-material";
-import { GalaxyButton, PremiumLoader, GlassCard } from "../components/CreativeComponents";
+import { GalaxyButton, PremiumLoader, GlassCard, Skeleton } from "../components/CreativeComponents";
 import { useDispatch, useSelector } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
 import { getPosts, createPost, likePost, addComment, getComments, deletePost, updatePost } from "../api";
 import { format } from "timeago.js";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 // ─── Animations ────────────────────────────────────────────────────────────────
 
@@ -143,6 +148,90 @@ const ComposerActions = styled.div`
   border-top: 1px solid ${({ theme }) => theme.border};
 `;
 
+const QuillWrapper = styled.div`
+  flex: 1;
+  .quill {
+    background: ${({ theme }) => theme.bg};
+    border-radius: 14px;
+    border: none;
+    overflow: hidden;
+  }
+  .ql-toolbar {
+    border: none !important;
+    border-bottom: 1px solid ${({ theme }) => theme.border} !important;
+    background: ${({ theme }) => theme.bgLighter};
+    padding: 8px 12px !important;
+  }
+  .ql-container {
+    border: none !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    min-height: 100px;
+  }
+  .ql-editor {
+    color: ${({ theme }) => theme.text};
+    line-height: 1.6;
+    padding: 12px 16px;
+    &.ql-blank::before {
+      color: ${({ theme }) => theme.textSoft};
+      font-style: normal;
+      left: 16px;
+    }
+  }
+`;
+
+const MarkdownContent = styled.div`
+  color: ${({ theme }) => theme.text};
+  font-size: 14px;
+  line-height: 1.7;
+  
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+  
+  ul, ol {
+    margin-bottom: 12px;
+    padding-left: 20px;
+  }
+  
+  li { margin-bottom: 4px; }
+  
+  code {
+    background: ${({ theme }) => theme.bg};
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 90%;
+  }
+  
+  pre {
+    background: ${({ theme }) => theme.bg};
+    padding: 12px;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin-bottom: 12px;
+    border: 1px solid ${({ theme }) => theme.border};
+    
+    code {
+      background: transparent;
+      padding: 0;
+    }
+  }
+  
+  blockquote {
+    border-left: 4px solid ${({ theme }) => theme.primary};
+    padding-left: 16px;
+    margin: 0 0 12px 0;
+    color: ${({ theme }) => theme.textSoft};
+    font-style: italic;
+  }
+
+  a {
+    color: ${({ theme }) => theme.primary};
+    text-decoration: underline;
+    &:hover { color: ${({ theme }) => theme.primary + 'CC'}; }
+  }
+`;
+
 const ComposerTools = styled.div`
   display: flex;
   gap: 4px;
@@ -215,12 +304,8 @@ const PostMeta = styled.div`
   margin-top: 2px;
 `;
 
-const PostContent = styled.p`
-  color: ${({ theme }) => theme.text};
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 0 0 16px;
-  white-space: pre-line;
+const PostContent = styled.div`
+  margin-bottom: 16px;
 `;
 
 const PostImage = styled.img`
@@ -293,11 +378,8 @@ const CommentName = styled.span`
   color: ${({ theme }) => theme.text};
 `;
 
-const CommentText = styled.p`
-  font-size: 13px;
-  color: ${({ theme }) => theme.textSoft};
-  margin: 4px 0 0;
-  line-height: 1.5;
+const CommentText = styled.div`
+  margin-top: 6px;
 `;
 
 const CommentTime = styled.span`
@@ -313,17 +395,19 @@ const CommentInputRow = styled.div`
   margin-top: 12px;
 `;
 
-const CommentInput = styled.input`
+const CommentInput = styled.textarea`
   flex: 1;
   background: ${({ theme }) => theme.bg};
   border: 1.5px solid ${({ theme }) => theme.border};
   padding: 9px 16px;
-  border-radius: 50px;
+  border-radius: 20px;
   color: ${({ theme }) => theme.text};
   font-size: 13px;
   font-family: inherit;
   outline: none;
   transition: all 0.2s;
+  resize: none;
+  overflow: hidden;
 
   &::placeholder { color: ${({ theme }) => theme.textMuted || theme.textSoft}; }
   &:focus { border-color: ${({ theme }) => theme.primary}; }
@@ -475,6 +559,31 @@ const CommunityNew = () => {
   const [editPostId, setEditPostId] = useState(null);
   const [editPostDesc, setEditPostDesc] = useState("");
   
+  const postRef = React.useRef(null);
+  const commentRef = React.useRef(null);
+  const editRef = React.useRef(null);
+
+  React.useLayoutEffect(() => {
+    if (postRef.current) {
+        postRef.current.style.height = 'auto';
+        postRef.current.style.height = postRef.current.scrollHeight + 'px';
+    }
+  }, [newPost]);
+
+  React.useLayoutEffect(() => {
+    if (commentRef.current) {
+        commentRef.current.style.height = 'auto';
+        commentRef.current.style.height = commentRef.current.scrollHeight + 'px';
+    }
+  }, [commentText, openComments]);
+
+  React.useLayoutEffect(() => {
+    if (editRef.current) {
+        editRef.current.style.height = 'auto';
+        editRef.current.style.height = editRef.current.scrollHeight + 'px';
+    }
+  }, [editPostDesc, editPostId]);
+
   // Menu State
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuPostId, setMenuPostId] = useState(null);
@@ -656,14 +765,22 @@ const CommunityNew = () => {
               >
                 {currentUser?.name?.[0]}
               </Avatar>
-              <StyledTextarea
-                placeholder={`What's on your mind, ${currentUser?.name?.split(' ')[0]}?`}
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleCreatePost();
-                }}
-              />
+              <QuillWrapper>
+                <ReactQuill
+                  theme="snow"
+                  placeholder={`What's on your mind, ${currentUser?.name?.split(' ')[0]}?`}
+                  value={newPost}
+                  onChange={setNewPost}
+                  modules={{
+                    toolbar: [
+                      ['bold', 'italic', 'underline', 'strike'],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      ['link', 'blockquote', 'code-block'],
+                      ['clean']
+                    ],
+                  }}
+                />
+              </QuillWrapper>
             </ComposerTop>
             <ComposerActions style={{ justifyContent: 'flex-end' }}>
               <GalaxyButton
@@ -679,8 +796,26 @@ const CommunityNew = () => {
 
           {/* Posts */}
           {loading ? (
-            <div style={{ display: "flex", justifyContent: "center", padding: "60px" }}>
-              <PremiumLoader />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{ background: theme.bgLighter, borderRadius: '20px', padding: '22px', border: `1px solid ${theme.border}` }}>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+                    <Skeleton height="42px" width="42px" radius="50%" />
+                    <div style={{ flex: 1 }}>
+                       <Skeleton height="18px" width="40%" style={{ marginBottom: '8px' }} />
+                       <Skeleton height="12px" width="20%" />
+                    </div>
+                  </div>
+                  <Skeleton height="16px" width="90%" style={{ marginBottom: '10px' }} />
+                  <Skeleton height="16px" width="100%" style={{ marginBottom: '10px' }} />
+                  <Skeleton height="16px" width="60%" style={{ marginBottom: '25px' }} />
+                  <div style={{ display: 'flex', gap: '20px', borderTop: `1px solid ${theme.border}`, paddingTop: '20px' }}>
+                    <Skeleton height="24px" width="60px" radius="8px" />
+                    <Skeleton height="24px" width="80px" radius="8px" />
+                    <Skeleton height="24px" width="60px" radius="8px" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredPosts.length === 0 ? (
             <EmptyState>
@@ -750,34 +885,40 @@ const CommunityNew = () => {
                     </Menu>
                   </>
                 </PostHeader>
-
-                {editPostId === post._id ? (
-                  <div style={{ marginBottom: 16 }}>
-                    <StyledTextarea
-                      value={editPostDesc}
-                      onChange={(e) => setEditPostDesc(e.target.value)}
-                      style={{ minHeight: "80px", border: `1px solid ${theme.border}`, marginBottom: 12, padding: "12px", background: theme.bg }}
-                      autoFocus
-                    />
-                    <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                      <GalaxyButton 
-                        style={{ padding: '7px 16px', fontSize: '13px', background: 'transparent', color: theme.text, border: `1px solid ${theme.border}` }} 
-                        onClick={() => { setEditPostId(null); setEditPostDesc(""); }}
-                      >
-                        Cancel
-                      </GalaxyButton>
-                      <GalaxyButton 
-                        style={{ padding: '7px 16px', fontSize: '13px' }} 
-                        onClick={() => handleUpdatePost(post._id)}
-                        disabled={postLoading || !editPostDesc.trim() || editPostDesc === post.desc}
-                      >
-                        Save Changes
-                      </GalaxyButton>
+                <PostContent>
+                  {editPostId === post._id ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <QuillWrapper>
+                        <ReactQuill
+                          theme="snow"
+                          value={editPostDesc}
+                          onChange={setEditPostDesc}
+                        />
+                      </QuillWrapper>
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        <GalaxyButton 
+                          style={{ padding: '7px 16px', fontSize: '13px', background: 'transparent', color: theme.text, border: `1px solid ${theme.border}` }} 
+                          onClick={() => { setEditPostId(null); setEditPostDesc(""); }}
+                        >
+                          Cancel
+                        </GalaxyButton>
+                        <GalaxyButton 
+                          style={{ padding: '7px 16px', fontSize: '13px' }} 
+                          onClick={() => handleUpdatePost(post._id)}
+                          disabled={postLoading || !editPostDesc.trim() || editPostDesc === post.desc}
+                        >
+                          Save Changes
+                        </GalaxyButton>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <PostContent>{post.desc}</PostContent>
-                )}
+                  ) : (
+                    <MarkdownContent>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                        {post.desc}
+                      </ReactMarkdown>
+                    </MarkdownContent>
+                  )}
+                </PostContent>
                 
                 {post.img && <PostImage src={post.img} alt="Post" />}
 
@@ -808,7 +949,13 @@ const CommunityNew = () => {
                             <CommentName>{comment.name}</CommentName>
                             <CommentTime>{format(comment.createdAt)}</CommentTime>
                           </div>
-                          <CommentText>{comment.desc}</CommentText>
+                          <CommentText>
+                            <MarkdownContent>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                                {comment.desc}
+                              </ReactMarkdown>
+                            </MarkdownContent>
+                          </CommentText>
                         </CommentBubble>
                       </CommentItem>
                     ))}
@@ -822,10 +969,17 @@ const CommunityNew = () => {
                         {currentUser?.name?.[0]}
                       </Avatar>
                       <CommentInput
-                        placeholder="Write a comment... (Press Enter to send)"
+                        ref={commentRef}
+                        placeholder="Write a comment... (Markdown supported)"
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleAddComment(post._id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleAddComment(post._id);
+                          }
+                        }}
+                        rows={1}
                       />
                       <SendBtn
                         onClick={() => handleAddComment(post._id)}

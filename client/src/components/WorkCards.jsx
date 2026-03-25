@@ -10,9 +10,11 @@ import { format } from "timeago.js";
 import { useDrag } from "react-dnd";
 import { tagColors } from "../data/data";
 import { Avatar, IconButton, Menu, MenuItem } from "@mui/material";
-import { updateWorkStatus, deleteWork } from "../api/index";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../redux/snackbarSlice";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const Container = styled.div`
   padding: 14px;
@@ -58,12 +60,10 @@ const Desc = styled.div`
   color: ${({ theme }) => theme.soft2};
   margin-top: 4px;
   line-height: 1.5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 5; /* number of lines to show */
-  line-clamp: 5;
-  -webkit-box-orient: vertical;
+  
+  p { margin: 0; }
+  ul, ol { padding-left: 18px; margin: 4px 0; }
+  li { margin-bottom: 2px; }
 `;
 
 const Progress = styled.div`
@@ -219,7 +219,11 @@ const Card = ({ status, work, deleteWorkLocal, stageColor }) => {
           <MenuItem onClick={handleDelete} style={{ color: '#EF4444' }}>Delete</MenuItem>
         </Menu>
       </Top>
-      <Desc>{work.desc}</Desc>
+      <Desc>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+          {work.desc}
+        </ReactMarkdown>
+      </Desc>
       <Progress>
         <Text>
           {status === "Cancelled" ? "Task Cancelled" :

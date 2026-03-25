@@ -2,6 +2,16 @@ import React from "react";
 import { messageThreads, activeChatHistory } from "../data/MessagesData";
 
 const MessagesContent = () => {
+    const [message, setMessage] = React.useState("");
+    const textareaRef = React.useRef(null);
+
+    React.useLayoutEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+    }, [message]);
+
     return (
         <main className="flex-1 flex overflow-hidden">
             <div className="w-[340px] border-r border-border-dark bg-background-dark flex flex-col h-full">
@@ -115,7 +125,21 @@ const MessagesContent = () => {
                         <button className="text-gray-500 hover:text-white transition">
                             <span className="material-symbols-outlined text-[24px]">attach_file</span>
                         </button>
-                        <input className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-200 py-2" placeholder="Type a message..." type="text" />
+                        <textarea 
+                            ref={textareaRef}
+                            className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-200 py-2 resize-none overflow-hidden min-h-[40px] leading-relaxed" 
+                            placeholder="Type a message... (Enter to send, Shift+Enter for new line)" 
+                            rows={1}
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    console.log("Sending message:", message);
+                                    setMessage("");
+                                }
+                            }}
+                        />
                         <div className="flex items-center space-x-2">
                             <button className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-white transition">
                                 <span className="material-symbols-outlined text-[24px]">mic</span>
