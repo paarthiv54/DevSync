@@ -376,6 +376,7 @@ const ProjFooter = styled.div`
   align-items: center;
   padding-top: 12px;
   border-top: 1px solid ${({ theme }) => theme.border};
+  margin-top: auto;
 `;
 
 const MemberGroup = styled.div`
@@ -611,8 +612,12 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
         <ProjectsGrid>
           {data.projects.slice(0, 6).map((project) => {
             return (
-              <Link to={`/projects/${project._id}`} key={project._id} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <ProjectCard>
+              <ProjectCard 
+                as={Link} 
+                to={`/projects/${project._id}`} 
+                key={project._id} 
+                style={{ textDecoration: 'none', color: 'inherit', height: '100%' }}
+              >
                   <ProjHeader>
                     <TagChip color={theme.primary}>{project.tags?.[0] || "Development"}</TagChip>
                     <StatusBadge status={project.status}>{project.status}</StatusBadge>
@@ -658,8 +663,7 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
                       {format(project.updatedAt)}
                     </TimeLabel>
                   </ProjFooter>
-                </ProjectCard>
-              </Link>
+              </ProjectCard>
             );
           })}
         </ProjectsGrid>
