@@ -493,10 +493,28 @@ const ProjectDocuments = ({ project, setProject }) => {
 
               {/* Preview based on format or link extension */}
               {(doc.format === 'PDF' || doc.link.toLowerCase().includes('.pdf')) && (
-                <iframe src={getValidUrl(doc.link)} width="100%" height="200px" style={{ border: 'none', marginTop: '8px', pointerEvents: 'none' }} title={doc.name} />
+                <div style={{ width: '100%', height: '200px', overflow: 'hidden', marginTop: '8px', borderRadius: '8px', backgroundColor: '#fff' }}>
+                  <iframe 
+                    src={`${getValidUrl(doc.link)}#toolbar=0&navpanes=0&scrollbar=0&view=Fit`} 
+                    width="calc(100% + 20px)" 
+                    height="100%" 
+                    style={{ border: 'none', pointerEvents: 'none' }} 
+                    scrolling="no" 
+                    title={doc.name} 
+                  />
+                </div>
               )}
               {(doc.format === 'PPT' || doc.link.toLowerCase().includes('.ppt') || doc.link.toLowerCase().includes('.pptx')) && (
-                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(getValidUrl(doc.link))}`} width="100%" height="200px" style={{ border: 'none', marginTop: '8px', pointerEvents: 'none' }} title={doc.name} />
+                <div style={{ width: '100%', height: '200px', overflow: 'hidden', marginTop: '8px', borderRadius: '8px', backgroundColor: '#fff' }}>
+                  <iframe 
+                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(getValidUrl(doc.link))}`} 
+                    width="calc(100% + 20px)" 
+                    height="100%" 
+                    style={{ border: 'none', pointerEvents: 'none' }} 
+                    scrolling="no" 
+                    title={doc.name} 
+                  />
+                </div>
               )}
 
               <div style={{ fontSize: '12px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px' }}>
