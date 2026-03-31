@@ -170,3 +170,7 @@
     at Function.process_params (D:\2nd devsync\server\node_modules\express\lib\router\index.js:346:12)
     at next (D:\2nd devsync\server\node_modules\express\lib\router\index.js:280:10)
     at Function.handle (D:\2nd devsync\server\node_modules\express\lib\router\index.js:175:3)
+2026-03-31T06:52:37.492Z - Error: Only the project owner can delete this project!
+    at createError (file:///D:/2nd%20devsync/server/error.js:2:17)
+    at deleteProject (file:///D:/2nd%20devsync/server/controllers/project.js:57:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

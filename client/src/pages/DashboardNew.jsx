@@ -352,7 +352,7 @@ const ProjTitle = styled.h3`
   transition: color 0.2s;
 `;
 
-const ProjDesc = styled.p`
+const ProjDesc = styled.div`
   font-size: 13px;
   color: ${({ theme }) => theme.textSoft};
   line-height: 1.6;
@@ -362,9 +362,13 @@ const ProjDesc = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  
+  /* Reset rich text inner tags like p, ul, ol so they don't break flex/box layout */
+  p, ul, ol {
+    margin: 0;
+    padding: 0;
+  }
 `;
-
-
 
 const ProjFooter = styled.div`
   display: flex;
@@ -616,7 +620,7 @@ const DashboardNew = ({ setNewProject, setNewTeam }) => {
 
                   <div>
                     <ProjTitle>{project.title}</ProjTitle>
-                    <ProjDesc style={{ marginTop: 6 }}>{project.desc}</ProjDesc>
+                    <ProjDesc style={{ marginTop: 6 }} dangerouslySetInnerHTML={{ __html: project.desc }} />
                   </div>
 
                   <ProjFooter>

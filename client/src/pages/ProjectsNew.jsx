@@ -260,7 +260,7 @@ const ProjTitle = styled.h3`
   white-space: nowrap;
 `;
 
-const ProjDesc = styled.p`
+const ProjDesc = styled.div`
   font-size: 13px;
   color: ${({ theme }) => theme.textSoft};
   margin: 0;
@@ -269,6 +269,12 @@ const ProjDesc = styled.p`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  
+  /* Reset rich text inner tags like p, ul, ol so they don't break flex/box layout */
+  p, ul, ol {
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 const ProjMeta = styled.div`
@@ -558,7 +564,7 @@ const ProjectsNew = ({ setNewProject }) => {
                   </ProjHeader>
 
                   {!listView && (
-                    <ProjDesc>{project.desc || "No description provided."}</ProjDesc>
+                    <ProjDesc dangerouslySetInnerHTML={{ __html: project.desc || "No description provided." }} />
                   )}
 
                   <ProjMeta $listView={listView}>
