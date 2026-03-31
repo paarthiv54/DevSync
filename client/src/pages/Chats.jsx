@@ -81,7 +81,7 @@ const Chats = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const socketUrl = import.meta.env.PROD ? 'https://dev-sync-powi.vercel.app' : 'http://localhost:8700';
+      const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8700';
       const newSocket = io(socketUrl);
       setSocket(newSocket);
       newSocket.emit("add-user", currentUser._id);
