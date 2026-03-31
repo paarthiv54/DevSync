@@ -118,7 +118,13 @@ app.use((err, req, res, next) => {
     });
 });
 
-httpServer.listen(port, () => {
-    console.log("Connected");
-    connect();
-});
+// On Vercel, we need to guarantee DB connection is instantiated whenever the function boots.
+connect();
+
+if (process.env.NODE_ENV !== 'production') {
+    httpServer.listen(port, () => {
+        console.log("Connected locally");
+    });
+}
+
+export default app;
