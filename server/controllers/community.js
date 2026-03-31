@@ -11,11 +11,12 @@ export const createPost = async (req, res, next) => {
             return next(createError(404, "User not found"));
         }
         console.log("Creating post for user:", user.name);
-        const { desc } = req.body;
+        const { desc, imgUrl } = req.body;
         if (!desc) return next(createError(400, "Description is required"));
 
         const newPost = new Post({
             desc,
+            imgUrl: imgUrl || "",
             userId: req.user.id,
             name: user.name || "Anonymous",
             img: user.img || ""

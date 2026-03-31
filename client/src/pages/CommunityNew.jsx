@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes, useTheme } from "styled-components";
-import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Modal } from "@mui/material";
 import {
   Favorite, FavoriteBorder, ChatBubbleOutline, Share, MoreHoriz, DeleteOutline, Edit,
-  Send, TrendingUp, People, Public, AutoAwesome, Image, Link
+  Send, TrendingUp, People, Public, AutoAwesome, Image, Link, CloseRounded
 } from "@mui/icons-material";
 import { GalaxyButton, PremiumLoader, GlassCard, Skeleton } from "../components/CreativeComponents";
 import { useDispatch, useSelector } from "react-redux";
@@ -312,9 +312,11 @@ const PostImage = styled.img`
   width: 100%;
   border-radius: 14px;
   margin-bottom: 16px;
-  max-height: 380px;
-  object-fit: cover;
+  max-height: 500px;
+  object-fit: contain;
+  background: ${({ theme }) => theme.bg || 'transparent'};
   border: 1px solid ${({ theme }) => theme.border};
+  cursor: pointer;
 `;
 
 const InteractionBar = styled.div`
@@ -551,6 +553,8 @@ const CommunityNew = () => {
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState("");
   const [postLoading, setPostLoading] = useState(false);
+  const [postImage, setPostImage] = useState("");
+  const [fullScreenImage, setFullScreenImage] = useState(null);
   const [openComments, setOpenComments] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
@@ -558,6 +562,7 @@ const CommunityNew = () => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [editPostId, setEditPostId] = useState(null);
   const [editPostDesc, setEditPostDesc] = useState("");
+  const [editPostImage, setEditPostImage] = useState("");
   
   const postRef = React.useRef(null);
   const commentRef = React.useRef(null);
@@ -662,14 +667,34 @@ const CommunityNew = () => {
     }
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        dispatch(openSnackbar({ message: "Image size should be less than 5MB", type: "error" }));
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPostImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCreatePost = async () => {
-    if (!newPost.trim()) return;
+    const isEmptyText = !newPost || newPost === "<p><br></p>" || !newPost.trim();
+    if (isEmptyText && !postImage) return;
+    
     setPostLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await createPost({ desc: newPost }, token);
+      const payload = { desc: isEmptyText ? " " : newPost };
+      if (postImage) payload.imgUrl = postImage;
+      const res = await createPost(payload, token);
       setPosts([res.data, ...posts]);
       setNewPost("");
+      setPostImage("");
       dispatch(openSnackbar({ message: "Post created!", type: "success" }));
       setPostLoading(false);
     } catch (err) {
@@ -690,14 +715,17 @@ const CommunityNew = () => {
   };
 
   const handleUpdatePost = async (postId) => {
-    if (!editPostDesc.trim()) return;
+    const isEmptyText = !editPostDesc || editPostDesc === "<p><br></p>" || !editPostDesc.trim();
+    if (isEmptyText && !editPostImage) return;
     setPostLoading(true);
     try {
       const token = localStorage.getItem("token");
-      await updatePost(postId, { desc: editPostDesc }, token);
-      setPosts(posts.map(p => p._id === postId ? { ...p, desc: editPostDesc } : p));
+      const payload = { desc: isEmptyText ? " " : editPostDesc, imgUrl: editPostImage };
+      await updatePost(postId, payload, token);
+      setPosts(posts.map(p => p._id === postId ? { ...p, desc: payload.desc, imgUrl: editPostImage } : p));
       setEditPostId(null);
       setEditPostDesc("");
+      setEditPostImage("");
       dispatch(openSnackbar({ message: "Post updated successfully", type: "success" }));
       setPostLoading(false);
     } catch (err) {
@@ -743,6 +771,16 @@ const CommunityNew = () => {
   return (
     <Container>
       {/* Header */}
+      {/* Full Screen Image Modal */}
+      <Modal open={!!fullScreenImage} onClose={() => setFullScreenImage(null)}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw', background: 'rgba(0,0,0,0.85)', outline: 'none' }}>
+           <IconButton style={{ position: 'absolute', top: 20, right: 30, color: 'white' }} onClick={() => setFullScreenImage(null)}>
+              <CloseRounded fontSize="large" />
+           </IconButton>
+           <img src={fullScreenImage} alt="Full Screen Preview" style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain', borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }} />
+        </div>
+      </Modal>
+
       <PageHeader>
         <TitleRow>
           <TitleIcon>
@@ -765,7 +803,15 @@ const CommunityNew = () => {
               >
                 {currentUser?.name?.[0]}
               </Avatar>
-              <QuillWrapper>
+              <QuillWrapper onKeyDownCapture={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const isEmptyText = !newPost || newPost === "<p><br></p>" || !newPost.trim();
+                    if (postLoading || (isEmptyText && !postImage)) return;
+                    handleCreatePost();
+                  }
+              }}>
                 <ReactQuill
                   theme="snow"
                   placeholder={`What's on your mind, ${currentUser?.name?.split(' ')[0]}?`}
@@ -782,11 +828,33 @@ const CommunityNew = () => {
                 />
               </QuillWrapper>
             </ComposerTop>
-            <ComposerActions style={{ justifyContent: 'flex-end' }}>
+            {postImage && (
+              <div style={{ position: "relative", marginBottom: "14px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${theme.border}` }}>
+                <img src={postImage} alt="preview" style={{ width: "100%", maxHeight: "300px", objectFit: "contain", background: 'rgba(0,0,0,0.05)' }} />
+                <IconButton
+                  style={{ position: "absolute", top: "10px", right: "10px", background: "rgba(0,0,0,0.5)", color: "white" }}
+                  size="small"
+                  onClick={() => setPostImage("")}
+                >
+                  <CloseRounded fontSize="small" />
+                </IconButton>
+              </div>
+            )}
+            <ComposerActions style={{ justifyContent: 'space-between' }}>
+              <ToolBtn as="label">
+                <Image />
+                Media
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageUpload}
+                />
+              </ToolBtn>
               <GalaxyButton
                 style={{ padding: '9px 20px', fontSize: '13px' }}
                 onClick={handleCreatePost}
-                disabled={postLoading || !newPost.trim()}
+                disabled={postLoading || ((!newPost || newPost === "<p><br></p>" || !newPost.trim()) && !postImage)}
               >
                 <Send style={{ fontSize: 15 }} />
                 {postLoading ? "Posting..." : "Post"}
@@ -865,7 +933,7 @@ const CommunityNew = () => {
                       }}
                     >
                       {currentUser?._id === post.userId && (
-                        <MenuItem onClick={() => { handleMenuClose(); setEditPostId(post._id); setEditPostDesc(post.desc); }}>
+                        <MenuItem onClick={() => { handleMenuClose(); setEditPostId(post._id); setEditPostDesc(post.desc); setEditPostImage(post.imgUrl || ""); }}>
                           <ListItemIcon><Edit fontSize="small" sx={{ color: theme.textSoft }} /></ListItemIcon>
                           <ListItemText primary="Edit Post" sx={{ span: { fontSize: '13px', fontWeight: 500 } }}/>
                         </MenuItem>
@@ -888,24 +956,70 @@ const CommunityNew = () => {
                 <PostContent>
                   {editPostId === post._id ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <QuillWrapper>
+                      <QuillWrapper onKeyDownCapture={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const isEmptyText = !editPostDesc || editPostDesc === "<p><br></p>" || !editPostDesc.trim();
+                            if (postLoading || (isEmptyText && !editPostImage) || (editPostDesc === post.desc && editPostImage === (post.imgUrl || ""))) return;
+                            handleUpdatePost(post._id);
+                          }
+                      }}>
                         <ReactQuill
                           theme="snow"
                           value={editPostDesc}
                           onChange={setEditPostDesc}
                         />
                       </QuillWrapper>
+                      {editPostImage ? (
+                        <div style={{ position: "relative", marginBottom: "8px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${theme.border}` }}>
+                          <img src={editPostImage} alt="preview" style={{ width: "100%", maxHeight: "300px", objectFit: "contain", background: 'rgba(0,0,0,0.05)' }} />
+                          <IconButton
+                            style={{ position: "absolute", top: "10px", right: "10px", background: "rgba(0,0,0,0.5)", color: "white" }}
+                            size="small"
+                            onClick={() => setEditPostImage("")}
+                          >
+                            <CloseRounded fontSize="small" />
+                          </IconButton>
+                        </div>
+                      ) : (
+                        <div>
+                            <ToolBtn as="label">
+                            <Image />
+                            Add Media
+                            <input
+                                type="file"
+                                accept="image/*,video/*"
+                                style={{ display: "none" }}
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                      if (file.size > 5 * 1024 * 1024) {
+                                        dispatch(openSnackbar({ message: "Image size should be less than 5MB", type: "error" }));
+                                        return;
+                                      }
+                                      const reader = new FileReader();
+                                      reader.onloadend = () => {
+                                        setEditPostImage(reader.result);
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                            />
+                            </ToolBtn>
+                        </div>
+                      )}
                       <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <GalaxyButton 
                           style={{ padding: '7px 16px', fontSize: '13px', background: 'transparent', color: theme.text, border: `1px solid ${theme.border}` }} 
-                          onClick={() => { setEditPostId(null); setEditPostDesc(""); }}
+                          onClick={() => { setEditPostId(null); setEditPostDesc(""); setEditPostImage(""); }}
                         >
                           Cancel
                         </GalaxyButton>
                         <GalaxyButton 
                           style={{ padding: '7px 16px', fontSize: '13px' }} 
                           onClick={() => handleUpdatePost(post._id)}
-                          disabled={postLoading || !editPostDesc.trim() || editPostDesc === post.desc}
+                          disabled={postLoading || ((!editPostDesc || editPostDesc === "<p><br></p>" || !editPostDesc.trim()) && !editPostImage) || (editPostDesc === post.desc && editPostImage === (post.imgUrl || ""))}
                         >
                           Save Changes
                         </GalaxyButton>
@@ -920,7 +1034,7 @@ const CommunityNew = () => {
                   )}
                 </PostContent>
                 
-                {post.img && <PostImage src={post.img} alt="Post" />}
+                {editPostId !== post._id && post.imgUrl && <PostImage src={post.imgUrl} alt="Post" onClick={() => setFullScreenImage(post.imgUrl)} />}
 
                 <InteractionBar>
                   <InteractionBtn $liked={isLiked(post)} onClick={() => handleLike(post._id)}>

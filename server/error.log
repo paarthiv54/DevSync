@@ -140,3 +140,33 @@
     at ServerResponse.json (C:\Users\Paarthiv Ramaraju\OneDrive\Desktop\DevSync Major\server\node_modules\express\lib\response.js:278:15)
     at verifyInvitation (file:///C:/Users/Paarthiv%20Ramaraju/OneDrive/Desktop/DevSync%20Major/server/controllers/project.js:428:28)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-03-30T05:46:49.695Z - Error: Wrong OTP
+    at createError (file:///D:/2nd%20devsync/server/error.js:2:17)
+    at verifyOTP (file:///D:/2nd%20devsync/server/controllers/auth.js:287:17)
+    at Layer.handle [as handle_request] (D:\2nd devsync\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\2nd devsync\server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (D:\2nd devsync\server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (D:\2nd devsync\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\2nd devsync\server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\2nd devsync\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\2nd devsync\server\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\2nd devsync\server\node_modules\express\lib\router\index.js:175:3)
+2026-03-30T06:06:27.563Z - Error: Invited user not found! Please ask them to register first.
+    at createError (file:///D:/2nd%20devsync/server/error.js:2:17)
+    at inviteProjectMember (file:///D:/2nd%20devsync/server/controllers/project.js:328:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-03-30T06:07:05.234Z - Error: Invited user not found! Please ask them to register first.
+    at createError (file:///D:/2nd%20devsync/server/error.js:2:17)
+    at inviteProjectMember (file:///D:/2nd%20devsync/server/controllers/project.js:328:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-03-30T08:09:47.338Z - Error: You are not authenticated!
+    at createError (file:///D:/2nd%20devsync/server/error.js:2:17)
+    at verifyToken (file:///D:/2nd%20devsync/server/middleware/verifyToken.js:6:50)
+    at Layer.handle [as handle_request] (D:\2nd devsync\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\2nd devsync\server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (D:\2nd devsync\server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (D:\2nd devsync\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\2nd devsync\server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (D:\2nd devsync\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\2nd devsync\server\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (D:\2nd devsync\server\node_modules\express\lib\router\index.js:175:3)
