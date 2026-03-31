@@ -4,8 +4,10 @@ import jwt_decode from 'jwt-decode';
 // Examples:
 // VITE_API_BASE_URL=https://your-api.example.com/api/
 // VITE_API_BASE_URL=http://localhost:8700/api/
-// Fallback to relative '/api/' if not set
-const baseURL = import.meta.env.VITE_API_BASE_URL || '/api/';
+// Fallback to relative '/api/' if not set or production explicitly
+const isProd = import.meta.env.PROD;
+const defaultBaseUrl = isProd ? 'https://dev-sync-powi.vercel.app/api/' : 'http://localhost:8700/api/';
+const baseURL = import.meta.env.VITE_API_BASE_URL || defaultBaseUrl;
 const API = axios.create({ baseURL });
 
 

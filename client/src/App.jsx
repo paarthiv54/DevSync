@@ -76,7 +76,8 @@ function AppContent({ darkMode, setDarkMode }) {
   // Global socket for live notifications
   useEffect(() => {
     if (!currentUser) return;
-    const socket = io('http://localhost:8700', { transports: ['websocket'] });
+    const socketUrl = import.meta.env.PROD ? 'https://dev-sync-powi.vercel.app' : 'http://localhost:8700';
+    const socket = io(socketUrl, { transports: ['websocket'] });
     socket.emit('add-user', currentUser._id);
     setGlobalSocket(socket);
     return () => socket.disconnect();
