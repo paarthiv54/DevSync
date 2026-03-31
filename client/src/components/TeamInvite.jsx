@@ -39,8 +39,11 @@ const TeamInvite = () => {
     const role = query.get("role");
 
     const { currentUser } = useSelector((state) => state.user);
+    const calledOnce = React.useRef(false);
 
     useEffect(() => {
+        if (calledOnce.current) return;
+        calledOnce.current = true;
         verifyTeamInvite(code, teamid, userid, access, role).then(async (res) => {
             console.log(res);
             if (res.status === 200) {
