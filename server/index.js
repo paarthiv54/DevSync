@@ -84,14 +84,26 @@ app.set("io", io);
 app.set("onlineUsers", onlineUsers);
 
 
-const connect = () => {
-    mongoose.set('strictQuery', true);
-    mongoose.connect(process.env.MONGO_URL).then(() => {
+// Database connection caching for Serverless
+let isConnected = false;
+
+const connect = async () => {
+    if (isConnected) return;
+    try {
+        mongoose.set('strictQuery', true);
+        await mongoose.connect(process.env.MONGO_URL);
+        isConnected = true;
         console.log('MongoDB connected');
-    }).catch((err) => {
+    } catch (err) {
         console.log(err);
-    });
+    }
 };
+
+// Global middleware to guarantee DB connection before ANY route runs
+app.use(async (req, res, next) => {
+    await connect();
+    next();
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -118,12 +130,10 @@ app.use((err, req, res, next) => {
     });
 });
 
-// On Vercel, we need to guarantee DB connection is instantiated whenever the function boots.
-connect();
-
 if (process.env.NODE_ENV !== 'production') {
     httpServer.listen(port, () => {
         console.log("Connected locally");
+        connect();
     });
 }
 
