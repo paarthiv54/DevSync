@@ -129,7 +129,7 @@ const StatusBadge = styled.span`
   vertical-align: middle;
 `;
 
-const ProjectDesc = styled.p`
+const ProjectDesc = styled.div`
   color: ${({ theme }) => theme.textSoft};
   font-size: 15px;
   line-height: 1.6;
@@ -627,7 +627,7 @@ const ProjectDetails = () => {
               <ProjectTitle>{item.title}</ProjectTitle>
               <StatusBadge status={item.status}>{item.status}</StatusBadge>
             </div>
-            <ProjectDesc>{item.desc}</ProjectDesc>
+            <ProjectDesc dangerouslySetInnerHTML={{ __html: item.desc }} />
             <MetaRow>
               <AvatarGroup max={4}>
                 {members.map((member) => (
