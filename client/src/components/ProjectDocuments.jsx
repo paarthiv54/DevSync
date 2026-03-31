@@ -320,6 +320,15 @@ const SubmitButton = styled.button`
   }
 `;
 
+const getValidUrl = (url) => {
+  if (!url) return '#';
+  const trimmed = url.trim();
+  if (trimmed.toLowerCase().startsWith('http://') || trimmed.toLowerCase().startsWith('https://')) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+};
+
 const ProjectDocuments = ({ project, setProject }) => {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
@@ -471,7 +480,7 @@ const ProjectDocuments = ({ project, setProject }) => {
       ) : (
         <DocumentGrid>
           {project.documents.map((doc) => (
-            <DocCard key={doc._id} href={doc.link} target="_blank" rel="noopener noreferrer">
+            <DocCard key={doc._id} href={getValidUrl(doc.link)} target="_blank" rel="noopener noreferrer">
               <DocHeader>
                 <IconWrapper format={doc.format}>
                   {getFormatIcon(doc.format, doc.link)}
@@ -484,10 +493,10 @@ const ProjectDocuments = ({ project, setProject }) => {
 
               {/* Preview based on format or link extension */}
               {(doc.format === 'PDF' || doc.link.toLowerCase().includes('.pdf')) && (
-                <iframe src={doc.link} width="100%" height="200px" style={{ border: 'none', marginTop: '8px' }} />
+                <iframe src={getValidUrl(doc.link)} width="100%" height="200px" style={{ border: 'none', marginTop: '8px', pointerEvents: 'none' }} title={doc.name} />
               )}
               {(doc.format === 'PPT' || doc.link.toLowerCase().includes('.ppt') || doc.link.toLowerCase().includes('.pptx')) && (
-                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(doc.link)}`} width="100%" height="200px" style={{ border: 'none', marginTop: '8px' }} />
+                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(getValidUrl(doc.link))}`} width="100%" height="200px" style={{ border: 'none', marginTop: '8px', pointerEvents: 'none' }} title={doc.name} />
               )}
 
               <div style={{ fontSize: '12px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px' }}>

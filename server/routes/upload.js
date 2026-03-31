@@ -16,30 +16,25 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    const isImage = file.mimetype.startsWith('image/');
-    const isVideo = file.mimetype.startsWith('video/');
-    
-    // Use 'raw' for documents (PPT, PDF, DOCX) to preserve format
-    let resource_type = 'raw';
-    if (isImage) resource_type = 'image';
-    if (isVideo) resource_type = 'video';
-
     const filenameParts = file.originalname.split('.');
-    const ext = filenameParts.pop();
+    const ext = filenameParts.pop().toLowerCase();
     const filenameWithoutExt = filenameParts.join('.');
     const public_id = `${filenameWithoutExt.replace(/\s+/g, '_')}_${Date.now()}`;
     
+    // Use 'raw' for documents so Cloudinary does not attempt image processing which fails for PDFs on free/default tiers.
+    let resource_type = 'auto';
+    const rawExtensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'csv', 'zip', 'rar'];
+    
+    if (rawExtensions.includes(ext)) {
+      resource_type = 'raw';
+    }
+
     let params = {
       folder: 'devsync_documents',
       resource_type: resource_type,
+      // For raw files, Cloudinary requires the extension to be part of the public_id
+      public_id: resource_type === 'raw' ? `${public_id}.${ext}` : public_id,
     };
-
-    // For 'raw' files, adding the extension to public_id ensures the final URL has the correct format
-    if (resource_type === 'raw') {
-      params.public_id = `${public_id}.${ext}`;
-    } else {
-      params.public_id = public_id;
-    }
 
     return params;
   },
