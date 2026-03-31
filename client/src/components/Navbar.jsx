@@ -14,10 +14,8 @@ import Avatar from "@mui/material/Avatar";
 import AccountDialog from "./AccountDialog";
 import UserAvatar from "./UserAvatar";
 import NotificationDialog from "./NotificationDialog";
-import { getUsers, notifications, clearNotifications } from "../api/index";
-import { openSnackbar } from "../redux/snackbarSlice";
-import { logout } from "../redux/userSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Folder, Assignment } from "@mui/icons-material";
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -94,6 +92,57 @@ const SearchInput = styled.div`
     color: ${({ theme }) => theme.textMuted || theme.textSoft};
     font-size: 18px;
   }
+`;
+
+const DropdownContainer = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  background: ${({ theme }) => theme.bgLighter};
+  border: 1px solid ${({ theme }) => theme.border};
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  z-index: 100;
+  max-height: 480px;
+  overflow-y: auto;
+  
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: ${({ theme }) => theme.primary + '50'}; border-radius: 4px; }
+`;
+
+const SectionTitleSearch = styled.div`
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.textSoft};
+  text-transform: uppercase;
+  background: ${({ theme }) => theme.bg};
+  border-bottom: 1px solid ${({ theme }) => theme.border};
+  border-top: 1px solid ${({ theme }) => theme.border};
+  &:first-child { border-top: none; }
+`;
+
+const ResultItem = styled.div`
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: ${({ theme }) => theme.text};
+  border-bottom: 1px solid ${({ theme }) => theme.border + "50"};
+  
+  &:last-child { border-bottom: none; }
+  
+  &:hover {
+    background: ${({ theme }) => theme.itemHover};
+  }
+
+  .title { font-size: 14px; font-weight: 500; }
+  .desc { font-size: 12px; color: ${({ theme }) => theme.textSoft}; margin-top: 2px; }
 `;
 
 const UserActions = styled.div`
@@ -198,6 +247,10 @@ const StyledBadge = styled(Badge)`
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+import { getUsers, notifications, clearNotifications, getProjects, userTasks, searchUsers } from "../api/index";
+import { openSnackbar } from "../redux/snackbarSlice";
+import { logout } from "../redux/userSlice";
+
 const Navbar = ({ menuOpen, setMenuOpen }) => {
   const [SignUpOpen, setSignUpOpen] = useState(false);
   const [SignInOpen, setSignInOpen] = useState(false);
@@ -205,20 +258,40 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
+  const [allProjects, setAllProjects] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedUsers, setSearchedUsers] = useState([]);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [notification, setNotification] = useState([]);
   const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
-    getUsers(token).then((res) => {
-      setUsers(res.data);
-    }).catch((err) => {
-      if (err.response?.status === 401) {
-        dispatch(logout());
-      }
-    });
-  }, [dispatch]);
+    if (token) {
+      getUsers(token).then((res) => setUsers(res.data)).catch((err) => {
+        if (err.response?.status === 401) dispatch(logout());
+      });
+      getProjects(token).then((res) => setAllProjects(res.data)).catch(console.error);
+      userTasks(token).then((res) => setAllTasks(res.data)).catch(console.error);
+    }
+  }, [dispatch, token]);
+
+  // Live fetch users based on search query
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      const delayDebounceFn = setTimeout(() => {
+        searchUsers(searchQuery, token)
+          .then((res) => {
+            setSearchedUsers(Array.isArray(res.data) ? res.data : []);
+          })
+          .catch(err => console.error(err));
+      }, 300);
+      return () => clearTimeout(delayDebounceFn);
+    } else {
+      setSearchedUsers([]);
+    }
+  }, [searchQuery, token]);
 
   const getNotifications = async () => {
     try {
@@ -285,10 +358,78 @@ const Navbar = ({ menuOpen, setMenuOpen }) => {
             <SearchIcon />
             <input
               placeholder="Search projects, tasks, people..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
             />
           </SearchInput>
+
+          {searchFocused && searchQuery && (
+            <DropdownContainer>
+              {(() => {
+                const q = searchQuery.toLowerCase();
+                const filteredProjects = Array.isArray(allProjects) ? allProjects.filter(p => p.title?.toLowerCase().includes(q)) : [];
+                const filteredUsers = searchedUsers;
+                const filteredTasks = Array.isArray(allTasks) ? allTasks.filter(t => t.text?.toLowerCase().includes(q) || t.desc?.toLowerCase().includes(q)) : [];
+
+                if (filteredProjects.length === 0 && filteredUsers.length === 0 && filteredTasks.length === 0) {
+                  return (
+                    <div style={{ padding: '24px', textAlign: 'center', fontSize: 13, color: '#999' }}>
+                      No results found for "{searchQuery}"
+                    </div>
+                  );
+                }
+
+                return (
+                  <>
+                    {filteredProjects.length > 0 && (
+                      <>
+                        <SectionTitleSearch>Projects</SectionTitleSearch>
+                        {filteredProjects.slice(0, 4).map(p => (
+                          <ResultItem as={Link} to={`/projects/${p._id}`} key={p._id}>
+                            <Folder style={{ color: '#7C4DFF', fontSize: 20 }} />
+                            <div>
+                              <div className="title">{p.title}</div>
+                              {p.desc && <div className="desc">{p.desc.replace(/<[^>]+>/g, '').slice(0, 40)}...</div>}
+                            </div>
+                          </ResultItem>
+                        ))}
+                      </>
+                    )}
+                    {filteredTasks.length > 0 && (
+                      <>
+                        <SectionTitleSearch>Tasks</SectionTitleSearch>
+                        {filteredTasks.slice(0, 4).map(t => (
+                          <ResultItem key={t._id}>
+                            <Assignment style={{ color: '#00E5A0', fontSize: 20 }} />
+                            <div>
+                              <div className="title">{t.text}</div>
+                              <div className="desc">{t.status || 'Pending'}</div>
+                            </div>
+                          </ResultItem>
+                        ))}
+                      </>
+                    )}
+                    {filteredUsers.length > 0 && (
+                      <>
+                        <SectionTitleSearch>People</SectionTitleSearch>
+                        {filteredUsers.slice(0, 4).map(u => (
+                          <ResultItem key={u._id}>
+                            <Avatar src={u.img} sx={{ width: 28, height: 28, fontSize: 12 }}>{u.name?.[0]}</Avatar>
+                            <div>
+                              <div className="title">{u.name}</div>
+                              <div className="desc">{u.email}</div>
+                            </div>
+                          </ResultItem>
+                        ))}
+                      </>
+                    )}
+                  </>
+                );
+              })()}
+            </DropdownContainer>
+          )}
         </SearchContainer>
 
         <UserActions>
