@@ -1,0 +1,376 @@
+[
+  {
+    "id": "TC001",
+    "title": "Sign in with valid credentials redirects to dashboard and shows primary content",
+    "description": "Verifies that a user can sign in using email/password and is redirected to the authenticated dashboard where primary content is visible.",
+    "category": "User Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard primary content is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Sign in with malformed or unregistered email shows an authentication or validation error",
+    "description": "Verifies that invalid sign-in input results in a visible validation or authentication error and does not proceed into the app.",
+    "category": "User Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid email format into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an authentication or validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Sign up from landing page with valid credentials redirects to dashboard",
+    "description": "Verifies that a user can start account creation from the landing page, complete sign-up, and reach the dashboard.",
+    "category": "User Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the option to create an account"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new, valid email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-up form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard primary content is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Sign up with invalid or already-registered email shows a sign-up error or validation message",
+    "description": "Verifies that sign-up blocks invalid input and shows an error without entering the authenticated dashboard.",
+    "category": "User Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the option to create an account"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid email format into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-up form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sign-up error or validation message is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Cannot submit sign-in with empty required fields",
+    "description": "Verifies client-side required-field behavior prevents submission and shows validation feedback when fields are empty.",
+    "category": "User Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a required-field validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Dashboard requires authentication and is reachable after login",
+    "description": "Verifies that after successful login, the authenticated dashboard route loads and displays core content.",
+    "category": "User Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify authenticated dashboard content is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Create a new team from dashboard and see it listed",
+    "description": "Verifies that an authenticated user can create a team and the new team appears in the teams section.",
+    "category": "Teams Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click create team"
+      },
+      {
+        "type": "action",
+        "description": "Fill Team Alpha 001 into the team name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the team"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Team Alpha 001 is listed in the teams section"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Create team with invalid name shows validation error",
+    "description": "Verifies team creation input validation by attempting to save an invalid team name and observing an error message.",
+    "category": "Teams Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click create team"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid team name into the team name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the team"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a team creation validation error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Open an existing team and update its name successfully",
+    "description": "Verifies that a user can open a team from the list, update its name, save, and see the updated team information reflected in the UI.",
+    "category": "Teams Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click create team"
+      },
+      {
+        "type": "action",
+        "description": "Fill Team To Edit 001 into the team name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the team"
+      },
+      {
+        "type": "action",
+        "description": "Open Team To Edit 001 from the teams list"
+      },
+      {
+        "type": "action",
+        "description": "Fill Team To Edit 001 Updated into the team name field"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Team To Edit 001 Updated is displayed for the team"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Open an existing team and attempt to save invalid updates shows validation error",
+    "description": "Verifies that invalid updates to team data are blocked and an error is shown when saving changes.",
+    "category": "Teams Management",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click create team"
+      },
+      {
+        "type": "action",
+        "description": "Fill Team Invalid Update 001 into the team name field"
+      },
+      {
+        "type": "action",
+        "description": "Save the team"
+      },
+      {
+        "type": "action",
+        "description": "Open Team Invalid Update 001 from the teams list"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid team name into the team name field"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a team update validation error is visible"
+      }
+    ]
+  }
+]

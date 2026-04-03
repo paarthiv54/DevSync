@@ -1,0 +1,20 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173",
+  "loginUser": "majoyod532@smkanba.com",
+  "loginPassword": "majoyod532@smK",
+  "executionArgs": {
+    "projectName": "DevSync",
+    "projectPath": "d:\\Projects\\projects\\DevSync",
+    "testIds": [],
+    "additionalInstruction": "Test from creating user to checking features",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-Z5NN8beW_WpCMeQUAPtp8mJ49ljjhbCICaDd259ASM88KwJXBzrZRIDiYok83Iy1FStq_c69XdM35NvpBWgNN3Y6fnB27L-OGXSFIzqkoCwEpRYHm9TcErT5mTe8s-cCDdc"
+    }
+  },
+  "serverPort": 64969,
+  "proxy": "http://aefc6ab9-255d-4175-b670-90515b83deff:6m1ijQamhBMtvqzclbMDAaE85Jr0BIYw@tun.testsprite.com:8080"
+}

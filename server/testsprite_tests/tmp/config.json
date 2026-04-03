@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8700",
+  "backendAuthType": "public",
+  "executionArgs": {
+    "projectName": "server",
+    "projectPath": "d:\\Projects\\projects\\DevSync\\server",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-Z5NN8beW_WpCMeQUAPtp8mJ49ljjhbCICaDd259ASM88KwJXBzrZRIDiYok83Iy1FStq_c69XdM35NvpBWgNN3Y6fnB27L-OGXSFIzqkoCwEpRYHm9TcErT5mTe8s-cCDdc"
+    }
+  },
+  "serverPort": 53922,
+  "proxy": "http://17d3780e-a1e0-41f4-98b8-d7b39fef127b:3NwkthrKLUkTeI8CFwBlB7Eosl0cbpjq@tun.testsprite.com:8080"
+}

@@ -201,24 +201,33 @@ export const removeMember = async (req, res, next) => {
 
 export const addTeamProject = async (req, res, next) => {
 
-    const user = await User.findById(req.user.id);;
+    const user = await User.findById(req.user.id);
     if (!user) {
         return next(createError(404, "User not found"));
     }
 
-    // if (!user.currentOrganization) {
-    //     return next(createError(400, "Please select an organization first"));
-    // }
+    const team = await Teams.findById(req.params.id);
+    if (!team) {
+        return next(createError(404, "Team not found"));
+    }
+
+    // Verify if the user is a member of the team
+    const isMember = team.members.some(member => member.id.toString() === req.user.id);
+    if (!isMember) {
+        return next(createError(403, "You are not a member of this team..."));
+    }
 
     const newProject = new Project({
-        members: [{ id: user.id, role: "d", access: "Owner" }],
+        members: [{ id: user.id, img: user.img, email: user.email, name: user.name, role: "d", access: "Owner" }],
         organizationId: user.currentOrganization,
         ...req.body
     });
+    
     try {
-        const saveProject = await newProject.save(); // Removed redundant await await
+        const saveProject = await newProject.save(); 
         await User.findByIdAndUpdate(user.id, { $push: { projects: saveProject._id } }, { new: true });
         await Teams.findByIdAndUpdate(req.params.id, { $push: { projects: saveProject._id } }, { new: true });
+        
         // Also push to Organization
         if (user.currentOrganization) {
             await Organization.findByIdAndUpdate(user.currentOrganization, { $push: { projects: saveProject._id } });
@@ -263,9 +272,9 @@ export const inviteTeamMember = async (req, res, next) => {
     const isMember = team.members.some(m => m.id.toString() === req.body.id);
     if (isMember) return next(createError(403, "User is already a member of this team!"));
 
-    req.app.locals.CODE = await otpGenerator.generate(8, { upperCaseAlphabets: true, specialChars: true, lowerCaseAlphabets: true, digits: true, });
+    const code = jwt.sign({ teamid: req.params.id, userid: req.body.id }, process.env.JWT, { expiresIn: '7d' });
 
-    const link = `${process.env.URL}/team/invite/${req.app.locals.CODE}?teamid=${req.params.id}&userid=${req.body.id}&access=${req.body.access}&role=${req.body.role}`;
+    const link = `${process.env.URL}/team/invite/${code}?teamid=${req.params.id}&userid=${req.body.id}&access=${req.body.access}&role=${req.body.role}`;
 
     const mailBody = `
     <div style="font-family: Poppins, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
@@ -305,7 +314,14 @@ export const inviteTeamMember = async (req, res, next) => {
                 const newNotification = new Notifications({
                     link: team._id,
                     type: "team",
-                    message: `"${user.name}" invited you to join the team "${team.name}". Please check your email for the invitation link.`,
+                    message: `"${user.name}" invited you to join the team "${team.name}".`,
+                    data: {
+                        teamid: team._id,
+                        userid: req.body.id,
+                        access: req.body.access,
+                        role: req.body.role,
+                        code: code
+                    }
                 });
                 const savedNote = await newNotification.save();
                 await User.findByIdAndUpdate(req.body.id, { $push: { notifications: savedNote._id } });
@@ -324,48 +340,48 @@ export const inviteTeamMember = async (req, res, next) => {
     }
 };
 
-//verify invitation and add to team member
 export const verifyInvitationTeam = async (req, res, next) => {
     try {
         const { teamid, userid, access, role } = req.query;
         const code = req.params.code;
-        if (code === req.app.locals.CODE) {
-            req.app.locals.CODE = null;
-            req.app.locals.resetSession = true;
 
-            const team = await Teams.findById(teamid);
-            if (!team) return next(createError(404, "Team not found!"));
-            const user = await User.findById(userid);
-            if (!user) {
-                return next(createError(404, "User not found"));
+        try {
+            const decode = jwt.verify(code, process.env.JWT);
+            if (decode.teamid !== teamid || decode.userid !== userid) {
+                return next(createError(400, "Invalid Link - Context mismatch!"));
             }
-            for (let i = 0; i < team.members.length; i++) {
-                if (team.members[i].id.toString() === user.id) {
-                    return next(createError(403, "You are already a member of this team!"));
-                }
-            }
-            const newMember = { id: user.id, role: role, access: access };
-
-            await Teams.findByIdAndUpdate(
-                teamid,
-                {
-                    $push: { members: newMember },
-                },
-                { new: true }
-            );
-
-            await User.findByIdAndUpdate(
-                userid,
-                {
-                    $push: { teams: team.id },
-                },
-                { new: true }
-            );
-            return res.status(200).json({ Message: "You have successfully joined the team!" });
-
-
+        } catch (err) {
+            return next(createError(400, "Invalid or Expired Link - " + err.message));
         }
-        return res.status(400).json({ Message: "Invalid Lnk- Link Expired !" });
+
+        const team = await Teams.findById(teamid);
+        if (!team) return next(createError(404, "Team not found!"));
+        const user = await User.findById(userid);
+        if (!user) {
+            return next(createError(404, "User not found"));
+        }
+
+        // Check if user is already a member
+        const alreadyMember = team.members.some(member => member.id.toString() === userid);
+        if (alreadyMember) {
+            return next(createError(403, "You are already a member of this team!"));
+        }
+
+        const newMember = { id: user.id, role: role, access: access };
+
+        await Teams.findByIdAndUpdate(
+            teamid,
+            { $push: { members: newMember } },
+            { new: true }
+        );
+
+        await User.findByIdAndUpdate(
+            userid,
+            { $push: { teams: teamid } },
+            { new: true }
+        );
+
+        return res.status(200).json({ Message: "You have successfully joined the team!" });
     } catch (err) {
         next(err);
     }

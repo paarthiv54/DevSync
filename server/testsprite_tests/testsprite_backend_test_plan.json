@@ -1,0 +1,27 @@
+[
+  {
+    "id": "TC001",
+    "title": "post api auth signup register new user",
+    "description": "Test the user registration endpoint POST /api/auth/signup with valid name, email, and password to ensure a new user is created successfully and a UserObject is returned."
+  },
+  {
+    "id": "TC002",
+    "title": "post api auth signin login user",
+    "description": "Test the user login endpoint POST /api/auth/signin with valid email and password to verify that accessToken and refreshToken are returned for authenticated sessions."
+  },
+  {
+    "id": "TC003",
+    "title": "post api project create new project",
+    "description": "Test the project creation endpoint POST /api/project/ with valid JWT token and project details (title, description) to confirm a new project is created and ProjectObject is returned."
+  },
+  {
+    "id": "TC004",
+    "title": "get api project id retrieve project details",
+    "description": "Test the project retrieval endpoint GET /api/project/:id with valid JWT token and existing project id to verify the correct ProjectObject is returned."
+  },
+  {
+    "id": "TC005",
+    "title": "post api project works id add work to project",
+    "description": "Test the add work to project endpoint POST /api/project/works/:id with valid JWT token, existing project id, and work details (workTitle, details) to ensure a new WorkObject is added and returned."
+  }
+]

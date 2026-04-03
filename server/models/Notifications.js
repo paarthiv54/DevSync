@@ -9,6 +9,14 @@ const Notifications = new mongoose.Schema({
         type: String,
     },
     type: { type: String, required: true },
+    data: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
+    status: {
+        type: String,
+        default: "unread", // unread, read, accepted, rejected
+    }
 },
     { timestamps: true }
 );

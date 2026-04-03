@@ -174,3 +174,60 @@
     at createError (file:///D:/2nd%20devsync/server/error.js:2:17)
     at deleteProject (file:///D:/2nd%20devsync/server/controllers/project.js:57:19)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-04-03T13:30:39.383Z - Error: Entered email is Signed Up with google account. Please SignIn with google.
+    at createError (file:///D:/Projects/projects/DevSync/server/error.js:2:17)
+    at signin (file:///D:/Projects/projects/DevSync/server/controllers/auth.js:126:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2026-04-03T14:11:19.550Z - Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-35dd35e3621sm6078443a91.4 - gsmtp
+    at SMTPConnection._formatError (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:790:19)
+    at SMTPConnection._actionAUTHComplete (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:1542:34)
+    at SMTPConnection.<anonymous> (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:546:26)
+    at SMTPConnection._processResponse (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:953:20)
+    at SMTPConnection._onData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:755:14)
+    at SMTPConnection._onSocketData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:193:44)
+    at TLSSocket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+2026-04-03T14:14:13.275Z - Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-82cf9c4387esm6465782b3a.31 - gsmtp
+    at SMTPConnection._formatError (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:790:19)
+    at SMTPConnection._actionAUTHComplete (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:1542:34)
+    at SMTPConnection.<anonymous> (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:546:26)
+    at SMTPConnection._processResponse (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:953:20)
+    at SMTPConnection._onData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:755:14)
+    at SMTPConnection._onSocketData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:193:44)
+    at TLSSocket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+2026-04-03T14:14:45.885Z - Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-82cf9a24039sm6138439b3a.0 - gsmtp
+    at SMTPConnection._formatError (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:790:19)
+    at SMTPConnection._actionAUTHComplete (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:1542:34)
+    at SMTPConnection.<anonymous> (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:546:26)
+    at SMTPConnection._processResponse (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:953:20)
+    at SMTPConnection._onData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:755:14)
+    at SMTPConnection._onSocketData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:193:44)
+    at TLSSocket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+2026-04-03T14:18:53.694Z - Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-82cf9c72967sm6086849b3a.49 - gsmtp
+    at SMTPConnection._formatError (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:790:19)
+    at SMTPConnection._actionAUTHComplete (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:1542:34)
+    at SMTPConnection.<anonymous> (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:546:26)
+    at SMTPConnection._processResponse (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:953:20)
+    at SMTPConnection._onData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:755:14)
+    at SMTPConnection._onSocketData (D:\Projects\projects\DevSync\server\node_modules\nodemailer\lib\smtp-connection\index.js:193:44)
+    at TLSSocket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+2026-04-03T14:36:03.723Z - Error: You are not allowed to view this project!
+    at createError (file:///D:/Projects/projects/DevSync/server/error.js:2:17)
+    at file:///D:/Projects/projects/DevSync/server/controllers/project.js:118:23
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async getProject (file:///D:/Projects/projects/DevSync/server/controllers/project.js:106:5)

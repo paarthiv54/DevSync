@@ -331,104 +331,119 @@ export const inviteProjectMember = async (req, res, next) => {
   const isMember = project.members.some(m => m.id.toString() === req.body.id);
   if (isMember) return next(createError(403, "User is already a member of this project!"));
 
-  req.app.locals.CODE = await otpGenerator.generate(8, { upperCaseAlphabets: true, specialChars: true, lowerCaseAlphabets: true, digits: true, });
-  dotenv.config();
-  const link = `${process.env.URL}/projects/invite/${req.app.locals.CODE}?projectid=${req.params.id}&userid=${req.body.id}&access=${req.body.access}&role=${req.body.role}`;
-  const mailBody = `
-  <div style="font-family: Poppins, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
-    ${logoSVG}
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img src="${invitedUser.img}" alt="${invitedUser.name}'s Avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #854CE6; background-color: #fff;">
-    </div>
-    <h1 style="font-size: 22px; font-weight: 500; color: #854CE6; text-align: center; margin-bottom: 30px;">Invitation to Join Project</h1>
-    <div style="background-color: #FFF; border: 1px solid #e5e5e5; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.05);">
-        <div style="background-color: #854CE6; border-top-left-radius: 5px; border-top-right-radius: 5px; padding: 20px 0;">
-            <h2 style="font-size: 28px; font-weight: 500; color: #FFF; text-align: center; margin-bottom: 10px;"><b>${project.title}</b></h2>
+    const code = jwt.sign({ projectid: req.params.id, userid: req.body.id }, process.env.JWT, { expiresIn: '7d' });
+    dotenv.config();
+    const link = `${process.env.URL}/projects/invite/${code}?projectid=${req.params.id}&userid=${req.body.id}&access=${req.body.access}&role=${req.body.role}`;
+    
+    // ... mailBody logic ... (keeping it same as before)
+    const mailBody = `
+    <div style="font-family: Poppins, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+        ${logoSVG}
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${invitedUser.img}" alt="${invitedUser.name}'s Avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid #854CE6; background-color: #fff;">
         </div>
-        <div style="padding: 30px;">
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Hello ${req.body.name},</p>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">You've been invited to join a project called <b>${project.title}</b> on DevSync by <b>${user.name}</b>.</p>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">To accept the invitation and join the project, please click on the button below:</p>
-            <div style="text-align: center; margin-bottom: 30px;">
-                <a href=${link} style="background-color: #854CE6; color: #FFF; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Accept Invitation</a>
+        <h1 style="font-size: 22px; font-weight: 500; color: #854CE6; text-align: center; margin-bottom: 30px;">Invitation to Join Project</h1>
+        <div style="background-color: #FFF; border: 1px solid #e5e5e5; border-radius: 5px; box-shadow: 0px 3px 6px rgba(0,0,0,0.05);">
+            <div style="background-color: #854CE6; border-top-left-radius: 5px; border-top-right-radius: 5px; padding: 20px 0;">
+                <h2 style="font-size: 28px; font-weight: 500; color: #FFF; text-align: center; margin-bottom: 10px;"><b>${project.title}</b></h2>
             </div>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">If you have any questions or issues with joining the project, please contact  <b>${user.name}</b> for assistance.</p>
+            <div style="padding: 30px;">
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Hello ${req.body.name},</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">You've been invited to join a project called <b>${project.title}</b> on DevSync by <b>${user.name}</b>.</p>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">To accept the invitation and join the project, please click on the button below:</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <a href=${link} style="background-color: #854CE6; color: #FFF; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Accept Invitation</a>
+                </div>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">If you have any questions or issues with joining the project, please contact  <b>${user.name}</b> for assistance.</p>
+            </div>
         </div>
+        <br>
+        <p style="font-size: 16px; color: #666; margin-top: 30px;">Best regards,</p>
+        <p style="font-size: 16px; color: #666; margin-bottom: 20px; text-align: center;">The DevSync Team</p>
     </div>
-    <br>
-    <p style="font-size: 16px; color: #666; margin-top: 30px;">Best regards,</p>
-    <p style="font-size: 16px; color: #666; margin-bottom: 20px; text-align: center;">The DevSync Team</p>
-</div>
-`
+    `;
 
-  for (let i = 0; i < project.members.length; i++) {
-    if (project.members[i].id.toString() === req.user.id) {
-      if (project.members[i].access.toString() === "Owner" || project.members[i].access.toString() === "Admin" || project.members[i].access.toString() === "Editor") {
-        const mailOptions = {
-          from: process.env.EMAIL,
-          to: req.body.email,
-          subject: `Invitation to join project ${project.title}`,
-          html: mailBody
-        };
+    for (let i = 0; i < project.members.length; i++) {
+        const memberIdStr = project.members[i].id?._id ? project.members[i].id._id.toString() : project.members[i].id?.toString();
+        if (memberIdStr === req.user.id) {
+            if (project.members[i].access.toString() === "Owner" || project.members[i].access.toString() === "Admin" || project.members[i].access.toString() === "Editor") {
+                const mailOptions = {
+                    from: process.env.EMAIL,
+                    to: req.body.email,
+                    subject: `Invitation to join project ${project.title}`,
+                    html: mailBody
+                };
 
-        const newNotification = new Notifications({
-          link: project._id,
-          type: "project",
-          message: `"${user.name}" invited you to join the project "${project.title}". Please check your email for the invitation link.`,
-        });
-        const savedNote = await newNotification.save();
-        await User.findByIdAndUpdate(req.body.id, { $push: { notifications: savedNote._id } });
+                const newNotification = new Notifications({
+                    link: project._id,
+                    type: "project",
+                    message: `"${user.name}" invited you to join the project "${project.title}".`,
+                    data: {
+                        projectid: project._id,
+                        userid: req.body.id,
+                        access: req.body.access,
+                        role: req.body.role,
+                        code: code
+                    }
+                });
+                const savedNote = await newNotification.save();
+                await User.findByIdAndUpdate(req.body.id, { $push: { notifications: savedNote._id } });
 
-        transporter.sendMail(mailOptions, (err, data) => {
-          if (err) {
-            return next(err);
-          } else {
-            return res.status(200).json({ message: "Email sent successfully" });
-          }
-        });
-      } else {
-        return next(createError(403, "You are not allowed to invite members to this project!"));
-      }
+                transporter.sendMail(mailOptions, (err, data) => {
+                    if (err) {
+                        return next(err);
+                    } else {
+                        return res.status(200).json({ message: "Email sent successfully" });
+                    }
+                });
+            } else {
+                return next(createError(403, "You are not allowed to invite members to this project!"));
+            }
+        }
     }
-  }
-
 };
 
 //verify invitation and add to project member
 export const verifyInvitation = async (req, res, next) => {
-  try {
-    const { projectid, userid, access, role } = req.query;
-    const code = req.params.code;
-    if (code === req.app.locals.CODE) {
-      req.app.locals.CODE = null;
-      req.app.locals.resetSession = true;
-      const project = await Project.findById(projectid);
-      if (!project) return next(createError(404, "Project not found!"));
-      const user = await User.findById(userid);
-      if (!user) {
-        return next(createError(404, "User not found"));
-      }
+    try {
+        const { projectid, userid, access, role } = req.query;
+        const code = req.params.code;
 
-      for (let i = 0; i < project.members.length; i++) {
-        if (project.members[i].id === user.id) {
-          return next(createError(403, "You are already a member of this project!"));
+        try {
+            const decode = jwt.verify(code, process.env.JWT);
+            if (decode.projectid !== projectid || decode.userid !== userid) {
+                return next(createError(400, "Invalid Link - Context mismatch!"));
+            }
+        } catch (err) {
+            return next(createError(400, "Invalid or Expired Link - " + err.message));
         }
-      }
-      const newMember = { id: user.id, role: role, access: access };
-      const updatedProject = await Project.findByIdAndUpdate(
-        projectid,
-        {
-          $push: { members: newMember },
-        },
-        { new: true }
-      );
-      await User.findByIdAndUpdate(user.id, { $push: { projects: updatedProject._id } }, { new: true });
-      res.status(200).json({ Message: "You have successfully joined the PROJECT!" });
+
+        const project = await Project.findById(projectid);
+        if (!project) return next(createError(404, "Project not found!"));
+        const user = await User.findById(userid);
+        if (!user) {
+            return next(createError(404, "User not found"));
+        }
+
+        const alreadyMember = project.members.some(member => {
+            const mId = member.id?._id ? member.id._id.toString() : member.id?.toString();
+            return mId === userid;
+        });
+        if (alreadyMember) {
+            return next(createError(403, "You are already a member of this project!"));
+        }
+
+        const newMember = { id: user.id, role: role, access: access };
+        const updatedProject = await Project.findByIdAndUpdate(
+            projectid,
+            { $push: { members: newMember } },
+            { new: true }
+        );
+        await User.findByIdAndUpdate(user.id, { $push: { projects: updatedProject._id } }, { new: true });
+        res.status(200).json({ Message: "You have successfully joined the PROJECT!" });
+    } catch (err) {
+        next(err);
     }
-    return res.status(400).json({ Message: "Invalid Lnk- Link Expired !" });
-  } catch (err) {
-    next(err);
-  }
 };
 
 

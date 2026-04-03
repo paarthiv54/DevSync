@@ -1,0 +1,51 @@
+version: "2"
+type: frontend
+tech_stack:
+  - React
+  - Vite
+  - Styled Components
+  - Redux Toolkit
+  - React Router
+routes:
+  - path: /
+    file: src/pages/Home/Home.jsx
+    auth_required: false
+    description: Landing page
+  - path: /login
+    file: src/components/SignIn.jsx
+    auth_required: false
+    description: Sign-in modal component
+  - path: /dashboard
+    file: src/pages/DashboardNew.jsx
+    auth_required: true
+    description: Main dashboard 
+features:
+  - name: User Authentication
+    description: User can sign up and sign in using email and password
+    files:
+      - src/components/SignIn.jsx
+      - src/components/SignUp.jsx
+    entry_route: /
+    user_interactions:
+      - Fill email input field
+      - Fill password input field
+      - Click SignIn button to submit
+    api_calls:
+      - method: POST
+        endpoint: /api/auth/signin
+    auth_required: false
+  - name: Teams Management
+    description: Creating and managing teams
+    files:
+      - src/pages/Teams.jsx
+      - src/components/AddNewTeam.jsx
+    entry_route: /teams
+    user_interactions:
+      - Click create team
+      - Enter team name
+      - Save team
+    api_calls:
+      - method: POST
+        endpoint: /api/teams/
+    auth_required: true
+known_limitations: []

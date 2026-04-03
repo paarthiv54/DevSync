@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "post api auth signup should register new user successfully",
+    "description": "Test the POST /api/auth/signup endpoint to ensure it registers a new user with valid email, password, and name, returning 201 Created with user id."
+  },
+  {
+    "id": "TC002",
+    "title": "post api auth signin should authenticate user and return jwt",
+    "description": "Test the POST /api/auth/signin endpoint with valid credentials to verify it returns 200 OK with a JWT token for authenticated sessions."
+  },
+  {
+    "id": "TC003",
+    "title": "post api auth logout should logout authenticated user",
+    "description": "Test the POST /api/auth/logout endpoint with a valid Authorization token to ensure it logs out the user and returns 200 OK."
+  },
+  {
+    "id": "TC004",
+    "title": "get api users find should return current user profile",
+    "description": "Test the GET /api/users/find endpoint with a valid Authorization token to retrieve the current authenticated user's profile, returning 200 OK."
+  },
+  {
+    "id": "TC005",
+    "title": "put api users id should update user profile",
+    "description": "Test the PUT /api/users/:id endpoint with a valid Authorization token and valid update payload to update the user's profile, returning 200 OK with updated profile."
+  },
+  {
+    "id": "TC006",
+    "title": "post api project should create new project",
+    "description": "Test the POST /api/project/ endpoint with a valid Authorization token and project payload to create a new project, returning 201 Created with project id."
+  },
+  {
+    "id": "TC007",
+    "title": "get api project id should return project details",
+    "description": "Test the GET /api/project/:id endpoint with a valid Authorization token to retrieve project details, returning 200 OK."
+  },
+  {
+    "id": "TC008",
+    "title": "patch api project id should update project details",
+    "description": "Test the PATCH /api/project/:id endpoint with a valid Authorization token and update payload to modify project details, returning 200 OK."
+  },
+  {
+    "id": "TC009",
+    "title": "delete api project id should delete project",
+    "description": "Test the DELETE /api/project/:id endpoint with a valid Authorization token to delete the specified project, returning 204 No Content."
+  },
+  {
+    "id": "TC010",
+    "title": "post api community post should create community post",
+    "description": "Test the POST /api/community/post endpoint with a valid Authorization token and content payload to create a community post, returning 201 Created with post id."
+  }
+]

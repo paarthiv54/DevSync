@@ -1,0 +1,67 @@
+version: "2"
+type: backend
+tech_stack:
+  - Node.js
+  - Express.js
+  - MongoDB
+  - Socket.io
+features:
+  - name: Authentication API
+    description: Handles user authentication, registration, login, and password resets.
+    files:
+      - routes/auth.js
+      - controllers/auth.js
+    endpoints:
+      - method: POST
+        path: /api/auth/signup
+        description: Register a new user
+        auth_required: false
+        request_schema:
+          body:
+            name: string
+            email: string
+            password: string
+        response_schema:
+          "200": UserObject
+      - method: POST
+        path: /api/auth/signin
+        description: Login user
+        auth_required: false
+        request_schema:
+          body:
+            email: string
+            password: string
+        response_schema:
+          "200": Tokens
+    depends_on: []
+  - name: Project Management API
+    description: CRUD operations for projects, tasks, members, and documents.
+    files:
+      - routes/project.js
+      - controllers/project.js
+    endpoints:
+      - method: POST
+        path: /api/project/
+        description: Create a new project
+        auth_required: true
+        request_schema:
+          body:
+            title: string
+            description: string
+        response_schema:
+          "200": ProjectObject
+      - method: GET
+        path: /api/project/:id
+        description: Get specific project
+        auth_required: true
+        response_schema:
+          "200": ProjectObject
+      - method: POST
+        path: /api/project/works/:id
+        description: Add work to a project
+        auth_required: true
+        response_schema:
+          "200": WorkObject
+    depends_on:
+      - Authentication API
+known_limitations: []

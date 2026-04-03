@@ -1,0 +1,245 @@
+{"timestamp":"2026-04-02T03:07:33.361Z","level":"debug","message":"Generate code and execute params","context":{"projectName":"server","projectPath":"d:\\Projects\\projects\\DevSync\\server","testIds":[],"serverMode":"development"}}
+{"timestamp":"2026-04-02T03:07:33.407Z","level":"info","message":"Attempting to start server (attempt 1/3)"}
+{"timestamp":"2026-04-02T03:07:33.431Z","level":"info","message":"Attempting to start HTTP proxy (attempt 1/3)"}
+{"timestamp":"2026-04-02T03:07:33.411Z","level":"info","message":"HTTP server started successfully on port 53922"}
+{"timestamp":"2026-04-02T03:07:33.432Z","level":"info","message":"HTTP proxy started successfully on port 53924"}
+{"timestamp":"2026-04-02T03:07:34.536Z","level":"info","message":"🚀 Starting tunnel client: 17d3780e-a1e0-41f4-98b8-d7b39fef127b"}
+{"timestamp":"2026-04-02T03:07:34.537Z","level":"info","message":"⏱️ Network timeout: 10000ms, Auth: enabled"}
+{"timestamp":"2026-04-02T03:07:34.537Z","level":"info","message":"🔗 Establishing control connection..."}
+{"timestamp":"2026-04-02T03:07:34.537Z","level":"info","message":"📋 Config: localhost:53924 -> tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:35.284Z","level":"info","message":"proxy: [REDACTED]tun.testsprite.com:8080"}
+{"timestamp":"2026-04-02T03:07:35.284Z","level":"info","message":"Verifying tunnel connectivity..."}
+{"timestamp":"2026-04-02T03:07:35.285Z","level":"info","message":"Tunnel probe attempt 1/2 through tun.testsprite.com:8080 to http://localhost:8700..."}
+{"timestamp":"2026-04-02T03:07:35.906Z","level":"warn","message":"Tunnel probe attempt 1 failed: read ECONNRESET — retrying in 3s..."}
+{"timestamp":"2026-04-02T03:07:35.908Z","level":"info","message":"✅ Tunnel established, remote port: 8080"}
+{"timestamp":"2026-04-02T03:07:38.910Z","level":"info","message":"Tunnel probe attempt 2/2 through tun.testsprite.com:8080 to http://localhost:8700..."}
+{"timestamp":"2026-04-02T03:07:39.473Z","level":"info","message":"🔄 [1] New connection request: a84fc8e9-0cd9-4ac5-a416-da656ae152f8"}
+{"timestamp":"2026-04-02T03:07:39.474Z","level":"info","message":"TIME: connection-1"}
+{"timestamp":"2026-04-02T03:07:39.764Z","level":"info","message":"TIME END: remote-connect-1"}
+{"timestamp":"2026-04-02T03:07:39.770Z","level":"info","message":"✅ [1] Local connection established"}
+{"timestamp":"2026-04-02T03:07:39.476Z","level":"info","message":"TIME: remote-connect-1"}
+{"timestamp":"2026-04-02T03:07:39.765Z","level":"info","message":"✅ [1] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:40.059Z","level":"info","message":"✅ [1] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:39.765Z","level":"info","message":"📡 [1] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:40.060Z","level":"info","message":"✅ [1] Connection a84fc8e9-0cd9-4ac5-a416-da656ae152f8 fully established and proxying"}
+{"timestamp":"2026-04-02T03:07:39.475Z","level":"info","message":"🔗 [1] Starting handleConnection for a84fc8e9-0cd9-4ac5-a416-da656ae152f8"}
+{"timestamp":"2026-04-02T03:07:39.475Z","level":"info","message":"🌐 [1] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:40.059Z","level":"info","message":"✋ [1] Sending Accept message for a84fc8e9-0cd9-4ac5-a416-da656ae152f8"}
+{"timestamp":"2026-04-02T03:07:39.765Z","level":"info","message":"local-connect-1"}
+{"timestamp":"2026-04-02T03:07:39.770Z","level":"info","message":"🤝 [1] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:39.769Z","level":"info","message":"TIME END: local-connect-1"}
+{"timestamp":"2026-04-02T03:07:39.771Z","level":"info","message":"👋 [1] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:39.771Z","level":"info","message":"🔐 [1] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:40.060Z","level":"info","message":"TIME END: connection-1"}
+{"timestamp":"2026-04-02T03:07:40.059Z","level":"info","message":"🔄 [1] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:40.995Z","level":"info","message":"Tunnel probe succeeded on attempt 2: status=404"}
+{"timestamp":"2026-04-02T03:07:40.995Z","level":"info","message":"Tunnel connectivity verified."}
+{"timestamp":"2026-04-02T03:07:50.326Z","level":"info","message":"🔗 [2] Starting handleConnection for c83bd66e-d02b-4a08-9be8-99fe30801c5f"}
+{"timestamp":"2026-04-02T03:07:50.325Z","level":"info","message":"🔄 [2] New connection request: c83bd66e-d02b-4a08-9be8-99fe30801c5f"}
+{"timestamp":"2026-04-02T03:07:50.609Z","level":"info","message":"TIME END: remote-connect-2"}
+{"timestamp":"2026-04-02T03:07:50.326Z","level":"info","message":"TIME: remote-connect-2"}
+{"timestamp":"2026-04-02T03:07:50.609Z","level":"info","message":"✅ [2] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:50.899Z","level":"info","message":"✅ [2] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:50.609Z","level":"info","message":"local-connect-2"}
+{"timestamp":"2026-04-02T03:07:50.900Z","level":"info","message":"✋ [2] Sending Accept message for c83bd66e-d02b-4a08-9be8-99fe30801c5f"}
+{"timestamp":"2026-04-02T03:07:50.326Z","level":"info","message":"🌐 [2] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:50.326Z","level":"info","message":"TIME: connection-2"}
+{"timestamp":"2026-04-02T03:07:50.900Z","level":"info","message":"🔄 [2] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:50.609Z","level":"info","message":"📡 [2] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:50.613Z","level":"info","message":"TIME END: local-connect-2"}
+{"timestamp":"2026-04-02T03:07:50.613Z","level":"info","message":"🔐 [2] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:50.613Z","level":"info","message":"👋 [2] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:50.613Z","level":"info","message":"🤝 [2] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:50.613Z","level":"info","message":"✅ [2] Local connection established"}
+{"timestamp":"2026-04-02T03:07:50.900Z","level":"info","message":"✅ [2] Connection c83bd66e-d02b-4a08-9be8-99fe30801c5f fully established and proxying"}
+{"timestamp":"2026-04-02T03:07:50.900Z","level":"info","message":"TIME END: connection-2"}
+{"timestamp":"2026-04-02T03:07:52.058Z","level":"info","message":"🔄 [3] New connection request: b08080bf-43e4-4c26-96bf-cc843b3cef9a"}
+{"timestamp":"2026-04-02T03:07:52.059Z","level":"info","message":"🔗 [3] Starting handleConnection for b08080bf-43e4-4c26-96bf-cc843b3cef9a"}
+{"timestamp":"2026-04-02T03:07:52.335Z","level":"info","message":"TIME END: remote-connect-3"}
+{"timestamp":"2026-04-02T03:07:52.059Z","level":"info","message":"🌐 [3] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:52.336Z","level":"info","message":"📡 [3] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:52.614Z","level":"info","message":"✅ [3] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:52.336Z","level":"info","message":"local-connect-3"}
+{"timestamp":"2026-04-02T03:07:52.615Z","level":"info","message":"✋ [3] Sending Accept message for b08080bf-43e4-4c26-96bf-cc843b3cef9a"}
+{"timestamp":"2026-04-02T03:07:52.058Z","level":"info","message":"TIME: connection-3"}
+{"timestamp":"2026-04-02T03:07:52.059Z","level":"info","message":"TIME: remote-connect-3"}
+{"timestamp":"2026-04-02T03:07:52.615Z","level":"info","message":"✅ [3] Connection b08080bf-43e4-4c26-96bf-cc843b3cef9a fully established and proxying"}
+{"timestamp":"2026-04-02T03:07:52.336Z","level":"info","message":"✅ [3] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:52.339Z","level":"info","message":"TIME END: local-connect-3"}
+{"timestamp":"2026-04-02T03:07:52.339Z","level":"info","message":"🤝 [3] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:52.340Z","level":"info","message":"🔐 [3] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:52.340Z","level":"info","message":"👋 [3] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:52.339Z","level":"info","message":"✅ [3] Local connection established"}
+{"timestamp":"2026-04-02T03:07:52.615Z","level":"info","message":"TIME END: connection-3"}
+{"timestamp":"2026-04-02T03:07:52.615Z","level":"info","message":"🔄 [3] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:53.901Z","level":"info","message":"TIME: connection-4"}
+{"timestamp":"2026-04-02T03:07:53.900Z","level":"info","message":"🔄 [4] New connection request: 0c106901-9957-4560-9273-3d7fdb393c90"}
+{"timestamp":"2026-04-02T03:07:53.901Z","level":"info","message":"🔗 [4] Starting handleConnection for 0c106901-9957-4560-9273-3d7fdb393c90"}
+{"timestamp":"2026-04-02T03:07:54.225Z","level":"info","message":"✅ [4] Local connection established"}
+{"timestamp":"2026-04-02T03:07:54.212Z","level":"info","message":"TIME END: remote-connect-4"}
+{"timestamp":"2026-04-02T03:07:54.225Z","level":"info","message":"TIME END: local-connect-4"}
+{"timestamp":"2026-04-02T03:07:54.518Z","level":"info","message":"✅ [4] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:54.213Z","level":"info","message":"✅ [4] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:54.519Z","level":"info","message":"TIME END: connection-4"}
+{"timestamp":"2026-04-02T03:07:53.901Z","level":"info","message":"TIME: remote-connect-4"}
+{"timestamp":"2026-04-02T03:07:53.901Z","level":"info","message":"🌐 [4] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:54.519Z","level":"info","message":"✅ [4] Connection 0c106901-9957-4560-9273-3d7fdb393c90 fully established and proxying"}
+{"timestamp":"2026-04-02T03:07:54.213Z","level":"info","message":"local-connect-4"}
+{"timestamp":"2026-04-02T03:07:54.213Z","level":"info","message":"📡 [4] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:54.225Z","level":"info","message":"🤝 [4] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:54.225Z","level":"info","message":"🔐 [4] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:54.225Z","level":"info","message":"👋 [4] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:54.519Z","level":"info","message":"🔄 [4] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:54.518Z","level":"info","message":"✋ [4] Sending Accept message for 0c106901-9957-4560-9273-3d7fdb393c90"}
+{"timestamp":"2026-04-02T03:07:55.709Z","level":"info","message":"🔄 [5] New connection request: cacddc5f-af6f-4717-96bf-8f63fb34f46a"}
+{"timestamp":"2026-04-02T03:07:55.709Z","level":"info","message":"🔗 [5] Starting handleConnection for cacddc5f-af6f-4717-96bf-8f63fb34f46a"}
+{"timestamp":"2026-04-02T03:07:56.010Z","level":"info","message":"✅ [5] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:56.009Z","level":"info","message":"TIME END: remote-connect-5"}
+{"timestamp":"2026-04-02T03:07:56.315Z","level":"info","message":"✋ [5] Sending Accept message for cacddc5f-af6f-4717-96bf-8f63fb34f46a"}
+{"timestamp":"2026-04-02T03:07:56.010Z","level":"info","message":"local-connect-5"}
+{"timestamp":"2026-04-02T03:07:55.709Z","level":"info","message":"🌐 [5] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:55.709Z","level":"info","message":"TIME: connection-5"}
+{"timestamp":"2026-04-02T03:07:55.709Z","level":"info","message":"TIME: remote-connect-5"}
+{"timestamp":"2026-04-02T03:07:56.315Z","level":"info","message":"✅ [5] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:56.010Z","level":"info","message":"📡 [5] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:56.013Z","level":"info","message":"✅ [5] Local connection established"}
+{"timestamp":"2026-04-02T03:07:56.012Z","level":"info","message":"TIME END: local-connect-5"}
+{"timestamp":"2026-04-02T03:07:56.013Z","level":"info","message":"🔐 [5] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:56.013Z","level":"info","message":"👋 [5] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:56.013Z","level":"info","message":"🤝 [5] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:56.315Z","level":"info","message":"🔄 [5] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:56.316Z","level":"info","message":"✅ [5] Connection cacddc5f-af6f-4717-96bf-8f63fb34f46a fully established and proxying"}
+{"timestamp":"2026-04-02T03:07:56.316Z","level":"info","message":"TIME END: connection-5"}
+{"timestamp":"2026-04-02T03:07:57.551Z","level":"info","message":"🔄 [6] New connection request: fec3a723-75e0-4e17-9eb2-72e1d238ae8e"}
+{"timestamp":"2026-04-02T03:07:57.551Z","level":"info","message":"TIME: connection-6"}
+{"timestamp":"2026-04-02T03:07:57.828Z","level":"info","message":"TIME END: remote-connect-6"}
+{"timestamp":"2026-04-02T03:07:57.551Z","level":"info","message":"TIME: remote-connect-6"}
+{"timestamp":"2026-04-02T03:07:57.828Z","level":"info","message":"✅ [6] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:58.107Z","level":"info","message":"✋ [6] Sending Accept message for fec3a723-75e0-4e17-9eb2-72e1d238ae8e"}
+{"timestamp":"2026-04-02T03:07:57.828Z","level":"info","message":"📡 [6] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:58.107Z","level":"info","message":"🔄 [6] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:57.551Z","level":"info","message":"🌐 [6] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:57.551Z","level":"info","message":"🔗 [6] Starting handleConnection for fec3a723-75e0-4e17-9eb2-72e1d238ae8e"}
+{"timestamp":"2026-04-02T03:07:58.106Z","level":"info","message":"✅ [6] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:57.831Z","level":"info","message":"TIME END: local-connect-6"}
+{"timestamp":"2026-04-02T03:07:57.831Z","level":"info","message":"✅ [6] Local connection established"}
+{"timestamp":"2026-04-02T03:07:57.831Z","level":"info","message":"🤝 [6] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:57.828Z","level":"info","message":"local-connect-6"}
+{"timestamp":"2026-04-02T03:07:57.831Z","level":"info","message":"👋 [6] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:57.832Z","level":"info","message":"🔐 [6] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:58.107Z","level":"info","message":"✅ [6] Connection fec3a723-75e0-4e17-9eb2-72e1d238ae8e fully established and proxying"}
+{"timestamp":"2026-04-02T03:07:58.107Z","level":"info","message":"TIME END: connection-6"}
+{"timestamp":"2026-04-02T03:07:59.295Z","level":"info","message":"TIME: connection-7"}
+{"timestamp":"2026-04-02T03:07:59.295Z","level":"info","message":"🔄 [7] New connection request: e9a9eb0b-dabf-40b7-b59c-cc22e6ff3853"}
+{"timestamp":"2026-04-02T03:07:59.593Z","level":"info","message":"TIME END: remote-connect-7"}
+{"timestamp":"2026-04-02T03:07:59.295Z","level":"info","message":"🌐 [7] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:07:59.593Z","level":"info","message":"✅ [7] Remote connection established"}
+{"timestamp":"2026-04-02T03:07:59.887Z","level":"info","message":"✅ [7] Authentication completed"}
+{"timestamp":"2026-04-02T03:07:59.593Z","level":"info","message":"local-connect-7"}
+{"timestamp":"2026-04-02T03:07:59.888Z","level":"info","message":"TIME END: connection-7"}
+{"timestamp":"2026-04-02T03:07:59.295Z","level":"info","message":"🔗 [7] Starting handleConnection for e9a9eb0b-dabf-40b7-b59c-cc22e6ff3853"}
+{"timestamp":"2026-04-02T03:07:59.295Z","level":"info","message":"TIME: remote-connect-7"}
+{"timestamp":"2026-04-02T03:07:59.888Z","level":"info","message":"🔄 [7] Starting data proxy"}
+{"timestamp":"2026-04-02T03:07:59.596Z","level":"info","message":"🤝 [7] Starting handshake"}
+{"timestamp":"2026-04-02T03:07:59.593Z","level":"info","message":"📡 [7] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:07:59.596Z","level":"info","message":"TIME END: local-connect-7"}
+{"timestamp":"2026-04-02T03:07:59.596Z","level":"info","message":"✅ [7] Local connection established"}
+{"timestamp":"2026-04-02T03:07:59.596Z","level":"info","message":"🔐 [7] Performing authentication"}
+{"timestamp":"2026-04-02T03:07:59.596Z","level":"info","message":"👋 [7] Hello message sent"}
+{"timestamp":"2026-04-02T03:07:59.888Z","level":"info","message":"✋ [7] Sending Accept message for e9a9eb0b-dabf-40b7-b59c-cc22e6ff3853"}
+{"timestamp":"2026-04-02T03:07:59.888Z","level":"info","message":"✅ [7] Connection e9a9eb0b-dabf-40b7-b59c-cc22e6ff3853 fully established and proxying"}
+{"timestamp":"2026-04-02T03:08:01.093Z","level":"info","message":"TIME: connection-8"}
+{"timestamp":"2026-04-02T03:08:01.093Z","level":"info","message":"🔗 [8] Starting handleConnection for 42fa0835-a5fe-4480-afa7-e044d81b5664"}
+{"timestamp":"2026-04-02T03:08:01.380Z","level":"info","message":"✅ [8] Remote connection established"}
+{"timestamp":"2026-04-02T03:08:01.093Z","level":"info","message":"🌐 [8] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:08:01.380Z","level":"info","message":"📡 [8] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:08:01.672Z","level":"info","message":"✅ [8] Authentication completed"}
+{"timestamp":"2026-04-02T03:08:01.380Z","level":"info","message":"local-connect-8"}
+{"timestamp":"2026-04-02T03:08:01.672Z","level":"info","message":"✋ [8] Sending Accept message for 42fa0835-a5fe-4480-afa7-e044d81b5664"}
+{"timestamp":"2026-04-02T03:08:01.093Z","level":"info","message":"TIME: remote-connect-8"}
+{"timestamp":"2026-04-02T03:08:01.093Z","level":"info","message":"🔄 [8] New connection request: 42fa0835-a5fe-4480-afa7-e044d81b5664"}
+{"timestamp":"2026-04-02T03:08:01.673Z","level":"info","message":"TIME END: connection-8"}
+{"timestamp":"2026-04-02T03:08:01.379Z","level":"info","message":"TIME END: remote-connect-8"}
+{"timestamp":"2026-04-02T03:08:01.382Z","level":"info","message":"TIME END: local-connect-8"}
+{"timestamp":"2026-04-02T03:08:01.382Z","level":"info","message":"✅ [8] Local connection established"}
+{"timestamp":"2026-04-02T03:08:01.382Z","level":"info","message":"🤝 [8] Starting handshake"}
+{"timestamp":"2026-04-02T03:08:01.382Z","level":"info","message":"👋 [8] Hello message sent"}
+{"timestamp":"2026-04-02T03:08:01.382Z","level":"info","message":"🔐 [8] Performing authentication"}
+{"timestamp":"2026-04-02T03:08:01.673Z","level":"info","message":"✅ [8] Connection 42fa0835-a5fe-4480-afa7-e044d81b5664 fully established and proxying"}
+{"timestamp":"2026-04-02T03:08:01.672Z","level":"info","message":"🔄 [8] Starting data proxy"}
+{"timestamp":"2026-04-02T03:08:02.908Z","level":"info","message":"🔄 [9] New connection request: 98c5f5e7-73c2-4604-9c81-cc35799fe96f"}
+{"timestamp":"2026-04-02T03:08:02.909Z","level":"info","message":"TIME: connection-9"}
+{"timestamp":"2026-04-02T03:08:02.909Z","level":"info","message":"🌐 [9] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:08:03.280Z","level":"info","message":"TIME END: remote-connect-9"}
+{"timestamp":"2026-04-02T03:08:03.281Z","level":"info","message":"local-connect-9"}
+{"timestamp":"2026-04-02T03:08:03.566Z","level":"info","message":"✅ [9] Authentication completed"}
+{"timestamp":"2026-04-02T03:08:03.281Z","level":"info","message":"✅ [9] Remote connection established"}
+{"timestamp":"2026-04-02T03:08:02.909Z","level":"info","message":"🔗 [9] Starting handleConnection for 98c5f5e7-73c2-4604-9c81-cc35799fe96f"}
+{"timestamp":"2026-04-02T03:08:02.909Z","level":"info","message":"TIME: remote-connect-9"}
+{"timestamp":"2026-04-02T03:08:03.566Z","level":"info","message":"✋ [9] Sending Accept message for 98c5f5e7-73c2-4604-9c81-cc35799fe96f"}
+{"timestamp":"2026-04-02T03:08:03.567Z","level":"info","message":"🔄 [9] Starting data proxy"}
+{"timestamp":"2026-04-02T03:08:03.285Z","level":"info","message":"✅ [9] Local connection established"}
+{"timestamp":"2026-04-02T03:08:03.284Z","level":"info","message":"TIME END: local-connect-9"}
+{"timestamp":"2026-04-02T03:08:03.281Z","level":"info","message":"📡 [9] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:08:03.285Z","level":"info","message":"🔐 [9] Performing authentication"}
+{"timestamp":"2026-04-02T03:08:03.285Z","level":"info","message":"🤝 [9] Starting handshake"}
+{"timestamp":"2026-04-02T03:08:03.285Z","level":"info","message":"👋 [9] Hello message sent"}
+{"timestamp":"2026-04-02T03:08:03.567Z","level":"info","message":"✅ [9] Connection 98c5f5e7-73c2-4604-9c81-cc35799fe96f fully established and proxying"}
+{"timestamp":"2026-04-02T03:08:03.567Z","level":"info","message":"TIME END: connection-9"}
+{"timestamp":"2026-04-02T03:08:12.245Z","level":"info","message":"🔗 [10] Starting handleConnection for 5ec5eefa-2c3f-4502-ae87-0edc3a5c18a1"}
+{"timestamp":"2026-04-02T03:08:12.245Z","level":"info","message":"🔄 [10] New connection request: 5ec5eefa-2c3f-4502-ae87-0edc3a5c18a1"}
+{"timestamp":"2026-04-02T03:08:12.553Z","level":"info","message":"TIME END: remote-connect-10"}
+{"timestamp":"2026-04-02T03:08:12.557Z","level":"info","message":"🤝 [10] Starting handshake"}
+{"timestamp":"2026-04-02T03:08:12.245Z","level":"info","message":"🌐 [10] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:08:12.553Z","level":"info","message":"✅ [10] Remote connection established"}
+{"timestamp":"2026-04-02T03:08:12.840Z","level":"info","message":"✅ [10] Authentication completed"}
+{"timestamp":"2026-04-02T03:08:12.553Z","level":"info","message":"📡 [10] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:08:12.841Z","level":"info","message":"✅ [10] Connection 5ec5eefa-2c3f-4502-ae87-0edc3a5c18a1 fully established and proxying"}
+{"timestamp":"2026-04-02T03:08:12.245Z","level":"info","message":"TIME: connection-10"}
+{"timestamp":"2026-04-02T03:08:12.245Z","level":"info","message":"TIME: remote-connect-10"}
+{"timestamp":"2026-04-02T03:08:12.841Z","level":"info","message":"TIME END: connection-10"}
+{"timestamp":"2026-04-02T03:08:12.557Z","level":"info","message":"✅ [10] Local connection established"}
+{"timestamp":"2026-04-02T03:08:12.556Z","level":"info","message":"TIME END: local-connect-10"}
+{"timestamp":"2026-04-02T03:08:12.557Z","level":"info","message":"👋 [10] Hello message sent"}
+{"timestamp":"2026-04-02T03:08:12.553Z","level":"info","message":"local-connect-10"}
+{"timestamp":"2026-04-02T03:08:12.557Z","level":"info","message":"🔐 [10] Performing authentication"}
+{"timestamp":"2026-04-02T03:08:12.840Z","level":"info","message":"🔄 [10] Starting data proxy"}
+{"timestamp":"2026-04-02T03:08:12.840Z","level":"info","message":"✋ [10] Sending Accept message for 5ec5eefa-2c3f-4502-ae87-0edc3a5c18a1"}
+{"timestamp":"2026-04-02T03:08:17.386Z","level":"info","message":"🔄 [11] New connection request: 6400ef11-8325-46ba-a2a2-70f2930390d8"}
+{"timestamp":"2026-04-02T03:08:17.387Z","level":"info","message":"TIME: remote-connect-11"}
+{"timestamp":"2026-04-02T03:08:17.387Z","level":"info","message":"🌐 [11] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:08:17.676Z","level":"info","message":"TIME END: remote-connect-11"}
+{"timestamp":"2026-04-02T03:08:17.387Z","level":"info","message":"TIME: connection-11"}
+{"timestamp":"2026-04-02T03:08:17.676Z","level":"info","message":"📡 [11] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:08:17.953Z","level":"info","message":"✅ [11] Authentication completed"}
+{"timestamp":"2026-04-02T03:08:17.676Z","level":"info","message":"✅ [11] Remote connection established"}
+{"timestamp":"2026-04-02T03:08:17.954Z","level":"info","message":"TIME END: connection-11"}
+{"timestamp":"2026-04-02T03:08:17.387Z","level":"info","message":"🔗 [11] Starting handleConnection for 6400ef11-8325-46ba-a2a2-70f2930390d8"}
+{"timestamp":"2026-04-02T03:08:17.953Z","level":"info","message":"🔄 [11] Starting data proxy"}
+{"timestamp":"2026-04-02T03:08:17.677Z","level":"info","message":"local-connect-11"}
+{"timestamp":"2026-04-02T03:08:17.680Z","level":"info","message":"TIME END: local-connect-11"}
+{"timestamp":"2026-04-02T03:08:17.680Z","level":"info","message":"✅ [11] Local connection established"}
+{"timestamp":"2026-04-02T03:08:17.680Z","level":"info","message":"👋 [11] Hello message sent"}
+{"timestamp":"2026-04-02T03:08:17.680Z","level":"info","message":"🤝 [11] Starting handshake"}
+{"timestamp":"2026-04-02T03:08:17.681Z","level":"info","message":"🔐 [11] Performing authentication"}
+{"timestamp":"2026-04-02T03:08:17.953Z","level":"info","message":"✋ [11] Sending Accept message for 6400ef11-8325-46ba-a2a2-70f2930390d8"}
+{"timestamp":"2026-04-02T03:08:17.954Z","level":"info","message":"✅ [11] Connection 6400ef11-8325-46ba-a2a2-70f2930390d8 fully established and proxying"}
+{"timestamp":"2026-04-02T03:08:30.208Z","level":"info","message":"🔄 [12] New connection request: 5a102f62-e177-4e26-9676-e79a7bfc0c04"}
+{"timestamp":"2026-04-02T03:08:30.209Z","level":"info","message":"🔗 [12] Starting handleConnection for 5a102f62-e177-4e26-9676-e79a7bfc0c04"}
+{"timestamp":"2026-04-02T03:08:30.507Z","level":"info","message":"TIME END: remote-connect-12"}
+{"timestamp":"2026-04-02T03:08:30.507Z","level":"info","message":"✅ [12] Remote connection established"}
+{"timestamp":"2026-04-02T03:08:30.209Z","level":"info","message":"🌐 [12] Connecting to remote tun.testsprite.com:7300"}
+{"timestamp":"2026-04-02T03:08:30.507Z","level":"info","message":"📡 [12] Connecting to local localhost:53924"}
+{"timestamp":"2026-04-02T03:08:30.823Z","level":"info","message":"🔄 [12] Starting data proxy"}
+{"timestamp":"2026-04-02T03:08:30.507Z","level":"info","message":"local-connect-12"}
+{"timestamp":"2026-04-02T03:08:30.823Z","level":"info","message":"✅ [12] Authentication completed"}
+{"timestamp":"2026-04-02T03:08:30.209Z","level":"info","message":"TIME: remote-connect-12"}
+{"timestamp":"2026-04-02T03:08:30.209Z","level":"info","message":"TIME: connection-12"}
+{"timestamp":"2026-04-02T03:08:30.823Z","level":"info","message":"✋ [12] Sending Accept message for 5a102f62-e177-4e26-9676-e79a7bfc0c04"}
+{"timestamp":"2026-04-02T03:08:30.511Z","level":"info","message":"🤝 [12] Starting handshake"}
+{"timestamp":"2026-04-02T03:08:30.511Z","level":"info","message":"✅ [12] Local connection established"}
+{"timestamp":"2026-04-02T03:08:30.512Z","level":"info","message":"🔐 [12] Performing authentication"}
+{"timestamp":"2026-04-02T03:08:30.511Z","level":"info","message":"TIME END: local-connect-12"}
+{"timestamp":"2026-04-02T03:08:30.512Z","level":"info","message":"👋 [12] Hello message sent"}
+{"timestamp":"2026-04-02T03:08:30.823Z","level":"info","message":"✅ [12] Connection 5a102f62-e177-4e26-9676-e79a7bfc0c04 fully established and proxying"}
+{"timestamp":"2026-04-02T03:08:30.823Z","level":"info","message":"TIME END: connection-12"}

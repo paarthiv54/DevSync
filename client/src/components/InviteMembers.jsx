@@ -185,7 +185,7 @@ const InviteMembers = ({ setInvitePopup, id, teamInvite }) => {
 
   const [role, setRole] = React.useState("Member");
   const [access, setAccess] = React.useState("View Only");
-  const [Loading, setLoading] = React.useState(false);
+  const [loadingId, setLoadingId] = React.useState(null);
 
   const handleSearch = async (e) => {
     setSearch(e.target.value);
@@ -203,7 +203,7 @@ const InviteMembers = ({ setInvitePopup, id, teamInvite }) => {
   };
 
   const handleInvite = async (user) => {
-    setLoading(true);
+    setLoadingId(user._id);
     const User = {
       id: user._id,
       name: user.name,
@@ -217,11 +217,11 @@ const InviteMembers = ({ setInvitePopup, id, teamInvite }) => {
         .then((res) => {
           if (res.status === 200)
             dispatch(openSnackbar({ message: `Invitation sent to ${user.name}`, severity: "success" }));
-          setLoading(false);
+          setLoadingId(null);
         })
         .catch((err) => {
           dispatch(openSnackbar({ message: err.response?.data?.message || err.message, severity: "error" }));
-          setLoading(false);
+          setLoadingId(null);
           console.log(err);
         });
     } else {
@@ -230,12 +230,12 @@ const InviteMembers = ({ setInvitePopup, id, teamInvite }) => {
         .then((res) => {
           if (res.status === 200)
             dispatch(openSnackbar({ message: `Invitation sent to ${user.name}`, severity: "success" }));
-          setLoading(false);
+          setLoadingId(null);
         })
         .catch((err) => {
           console.log(err);
           dispatch(openSnackbar({ message: err.response?.data?.message || err.message, severity: "error" }));
-          setLoading(false);
+          setLoadingId(null);
         });
     }
   };
@@ -292,10 +292,9 @@ const InviteMembers = ({ setInvitePopup, id, teamInvite }) => {
                   <Role>
                     <Input style={{ width: '70px', fontSize: '12px', padding: '8px 10px' }} type="text" placeholder="Role" onChange={(e) => setRole(e.target.value)} />
                   </Role>
-
                 </Flex>
-                <InviteButton onClick={() => handleInvite(user)}>
-                  {Loading ? (
+                <InviteButton onClick={() => handleInvite(user)} disabled={loadingId === user._id}>
+                  {loadingId === user._id ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : (<>
                     <SendRounded sx={{ fontSize: "13px" }} />
@@ -305,10 +304,10 @@ const InviteMembers = ({ setInvitePopup, id, teamInvite }) => {
               </MemberCard>
             ))}
           </UsersList>
-
         </Wrapper>
       </Container>
     </Modal>
+
   );
 };
 
